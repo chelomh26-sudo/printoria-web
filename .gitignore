@@ -1,0 +1,22 @@
+# Secrets — NUNCA subir a GitHub
+.env
+.env.local
+.env.*.local
+
+# Dependencias (se reinstalan con npm install)
+node_modules/
+
+# Build output
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE / sistema
+.DS_Store
+Thumbs.db
+.claude/
+
+# Archivos locales de Windows
+*.bat
