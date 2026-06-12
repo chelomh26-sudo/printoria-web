@@ -217,4 +217,46 @@ export default function Productos() {
           <table className="w-full text-sm">
             <thead className="border-b border-zinc-200">
               <tr>
-                {['ID', 'Nombre', 'Descripción', 'Gramos', 'T.Ender', 'T.Bambu', 'Precio', 'C.Op Ender', 'C.Op Ba
+                {['ID', 'Nombre', 'Descripción', 'Gramos', 'T.Ender', 'T.Bambu', 'Precio', 'C.Op Ender', 'C.Op Bambu', ''].map(h => (
+                  <th key={h} className="text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider py-3 px-3 whitespace-nowrap">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-100">
+              {filtered.map(p => (
+                <tr key={p.id} className="hover:bg-zinc-100/30 transition-colors">
+                  <td className="py-3 px-3 font-mono text-[#96d629]">{p.id}</td>
+                  <td className="py-3 px-3 font-medium text-zinc-800">{p.nombre}</td>
+                  <td className="py-3 px-3 text-zinc-500 max-w[140px] truncate">{p.descripcion || '—'}</td>
+                  <td className="py-3 px-3 text-zinc-400">{fmtN(p.gramos, 1)}g</td>
+                  <td className="py-3 px-3 text-zinc-400">{fmtN(p.tiempoEnder, 0)}m</td>
+                  <td className="py-3 px-3 text-zinc-400">{fmtN(p.tiempoBambu, 0)}m</td>
+                  <td className="py-3 px-3 font-semibold text-zinc-800">{fmt(p.precioVenta)}</td>
+                  <td className="py-3 px-3 text-red-400">{fmt((p.tiempoEnder||0)*(config.costLuzMin+config.costDesgasteMin))}</td>
+                  <td className="py-3 px-3 text-red-400">{fmt((p.tiempoBambu||0)*(config.costLuzMin+config.costDesgasteMin))}</td>
+                  <td className="py-3 px-3">
+                    <div className="flex gap-1">
+                      <button onClick={() => setEditing({ ...p, _new: false })} className="bg-zinc-200 hover:bg-zinc-500 text-white text-xs px-2 py-1 rounded transition-colors">✏</button>
+                      <button onClick={() => del(p.id)} className="bg-red-100 hover:bg-red-500 text-red-500 hover:text-white text-xs px-2 py-1 rounded transition-colors">✕</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {filtered.length === 0 && (
+          <div className="text-center py-12 text-zinc-400 text-sm">
+            {search ? 'Sin resultados.' : 'No hay productos. Crea el primero.'}
+          </div>
+        )}
+      </div>
+
+      {editing && (
+        <Modal title={editing._new ? 'Nuevo Producto' : `Editar ${editing.id}`} onClose={() => setEditing(null)}>
+          <ProductoForm data={editing} config={config} onSave={save} onCancel={() => setEditing(null)} />
+        </Modal>
+      )}
+    </div>
+  );
+}
