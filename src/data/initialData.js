@@ -1,7 +1,7 @@
 export const initialConfig = {
   costLuzMin: 0.005,
   costDesgasteMin: 0.035,
-  // Tarifas por impresora (si están vacías usa las generales)
+  // Tarifas por impresora (si estan vacias usa las generales)
   costLuzMinBambu: 0.008,
   costDesgasteMinBambu: 0.05,
   costLuzMinEnder: 0.005,
@@ -9,7 +9,7 @@ export const initialConfig = {
   precioHoraTrabajo: 100,
   iva: 0,
   margenMinimo: 0.30,
-  // Catálogo público
+  // Catalogo publico
   whatsapp: '528341112949',
   instagram: 'printoria3dstudio',
   facebook: 'printoria3dstudio',
@@ -18,7 +18,7 @@ export const initialConfig = {
   slogan: 'Imprimiendo Posibilidades',
   ciudad: 'Victoria, Tamaulipas',
   apiKey: '',
-  sobreNosotros: 'En Printoria transformamos ideas en productos reales mediante impresión 3D. Desde artículos personalizados y decoración hasta soluciones para negocios.',
+  sobreNosotros: 'En Printoria transformamos ideas en productos reales mediante impresion 3D. Desde articulos personalizados y decoracion hasta soluciones para negocios.',
 };
 
 export const initialMaterials = [
@@ -86,4 +86,5 @@ export const initialProceso = [
   { orderId: 'V001', tipo: 'venta', hechasBambu: 0, hechasEnder: 0, fechaEntrega: '', pagado: false, entregado: false, estado: 'PENDIENTE' },
   { orderId: 'V002', tipo: 'venta', hechasBambu: 14, hechasEnder: 0, fechaEntrega: '', pagado: true, entregado: true, estado: 'ENTREGADO' },
   { orderId: 'V003', tipo: 'venta', hechasBambu: 2, hechasEnder: 0, fechaEntrega: '', pagado: true, entregado: true, estado: 'ENTREGADO' },
-  { orderId: 'MM001', tipo: 'mayoreo', hechasBambu: 0, hechasEnder: 0, fechaEntrega: '', pagado: false, entregado:
+  { orderId: 'MM001', tipo: 'mayoreo', hechasBambu: 0, hechasEnder: 0, fechaEntrega: '', pagado: false, entregado: false, estado: 'PENDIENTE' },
+];
