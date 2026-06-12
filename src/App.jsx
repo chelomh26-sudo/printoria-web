@@ -48,14 +48,14 @@ function AppContent() {
   const [hash, setHash] = useState(window.location.hash);
   const Page = PAGES[current] || Dashboard;
 
-  // Escucha cambios de hash para routing reactivo
+  // Listen for hash changes (reactive routing)
   useEffect(() => {
     const onHash = () => setHash(window.location.hash);
     window.addEventListener('hashchange', onHash);
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
-  // Modo catálogo público: URL con #catalogo → sin sidebar, solo vitrina
+  // Public catalog mode: #catalogo URL -> no sidebar, just storefront
   if (hash === '#catalogo') {
     return (
       <div className="min-h-screen bg-zinc-950 text-zinc-100">
@@ -65,4 +65,20 @@ function AppContent() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden" sty
+    <div className="flex h-screen overflow-hidden" style={{ background: '#e1e0e0' }}>
+      <Sidebar current={current} setCurrent={setCurrent} collapsed={collapsed} setCollapsed={setCollapsed} />
+      <main className="flex-1 overflow-auto" style={{ background: '#e1e0e0' }}>
+        <Page navigate={setCurrent} />
+      </main>
+      <ChatPanel />
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <PrintoriaProvider>
+      <AppContent />
+    </PrintoriaProvider>
+  );
+}
