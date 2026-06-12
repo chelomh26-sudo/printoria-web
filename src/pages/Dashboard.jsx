@@ -299,7 +299,7 @@ export default function Dashboard({ navigate }) {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-zinc-700 truncate">{p.nombre}</p>
                     <div className="mt-1">
-                      <Bar pct=y(p.unidades / maxUnidades) * 100} />
+                      <Bar pct={(p.unidades / maxUnidades) * 100} />
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0">
