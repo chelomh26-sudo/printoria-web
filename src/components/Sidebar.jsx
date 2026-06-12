@@ -4,11 +4,11 @@ import { usePrintoria } from '../store/PrintoriaContext';
 const GROUPS = [
   { label: null, items: [{ id: 'dashboard', label: 'Dashboard', icon: '📊' }] },
   { label: null, items: [{ id: 'proceso', label: 'Proceso', icon: '🔄' }] },
-  { label: null, items: [{ id: 'cola', label: 'Cola Impresión', icon: '🖨️' }] },
+  { label: null, items: [{ id: 'cola', label: 'Cola Impresion', icon: '🖨️' }] },
   { label: null, items: [{ id: 'finances', label: 'Finances 🔒', icon: '💵' }] },
-  { label: null, items: [{ id: 'config', label: 'Configuración', icon: '⚙️' }] },
+  { label: null, items: [{ id: 'config', label: 'Configuracion', icon: '⚙️' }] },
   {
-    label: 'CATÁLOGOS',
+    label: 'CATALOGOS',
     items: [
       { id: 'materiales', label: 'Materiales', icon: '🧵' },
       { id: 'productos', label: 'Productos', icon: '📦' },
@@ -29,10 +29,10 @@ const GROUPS = [
     ],
   },
   {
-    label: 'PÚBLICO',
+    label: 'PUBLICO',
     items: [
-      { id: 'galeria', label: 'Galería Fotos', icon: '📸' },
-      { id: 'catalogo', label: 'Catálogo Público', icon: '🛍️' },
+      { id: 'galeria', label: 'Galeria Fotos', icon: '📸' },
+      { id: 'catalogo', label: 'Catalogo Publico', icon: '🛍️' },
     ],
   },
 ];
@@ -96,7 +96,7 @@ export default function Sidebar({ current, setCurrent, collapsed, setCollapsed }
             </select>
             {selectedMonth !== 'all' && (
               <button onClick={() => setSelectedMonth('all')} className="text-xs mt-1" style={{ color: '#6b6b69' }}>
-                × Limpiar filtro
+                x Limpiar filtro
               </button>
             )}
           </div>
@@ -143,4 +143,9 @@ export default function Sidebar({ current, setCurrent, collapsed, setCollapsed }
 
       {/* Footer */}
       <div className="p-3 flex justify-center items-center gap-2" style={{ borderTop: '1px solid #3d3c3a' }}>
-        {!collapsed && <p className="text-xs" style={{ color: '#555452' }}>Printo
+        {!collapsed && <p className="text-xs" style={{ color: '#555452' }}>Printoria 3D v1.0</p>}
+        {collapsed && <p className="text-xs" style={{ color: '#555452' }}>.</p>}
+      </div>
+    </aside>
+  );
+}
