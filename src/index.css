@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c4c3c1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #96d629; }
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { opacity: 1; }
+
+/* ── Global premium styles ──────────────────────── */
+
+/* Page section headings */
+.section-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #78b01e;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, #96d62930, transparent);
+}
+
+/* Premium brand button */
+.btn-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: #96d629;
+  color: #1a2a00;
+  font-weight: 800;
+  font-size: 0.8rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px #96d62940;
+}
+.btn-brand:hover {
+  background: #a3dc3f;
+  box-shadow: 0 4px 14px #96d62960;
+  transform: translateY(-1px);
+}
+.btn-brand:active { transform: translateY(0); box-shadow: 0 1px 4px #96d62930; }
+.btn-brand:disabled { opacity: 0.4; transform: none; box-shadow: none; cursor: not-allowed; }
+
+/* Secondary outline button */
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: white;
+  color: #555452;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 0.75rem;
+  border: 1.5px solid #d1d0ce;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.btn-outline:hover { border-color: #96d629; color: #78b01e; background: #f5fce8; }
+.btn-outline:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Danger button */
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: white;
+  color: #ef4444;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 0.75rem;
+  border: 1.5px solid #fca5a5;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-danger:hover { background: #fef2f2; border-color: #ef4444; }
+
+/* White card */
+.card {
+  background: white;
+  border-radius: 1rem;
+  border: 1px solid #e8e7e5;
+  padding: 1.25rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
