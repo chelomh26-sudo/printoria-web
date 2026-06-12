@@ -256,4 +256,9 @@ export default function Config() {
           </div>
         </div>
         {restoreMsg && (
-          <p className={`text-sm font-medium ${restor
+          <p className={`text-sm font-medium ${restoreMsg.startsWith('✓') ? 'text-green-500' : 'text-red-500'}`}>{restoreMsg}</p>
+        )}
+      </div>
+    </div>
+  );
+}
