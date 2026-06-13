@@ -73,4 +73,50 @@ export function PrintoriaProvider({ children }) {
   const [multiSales, setMultiSales] = usePersistentState('printoria_multiSales', initialMultiSales);
   const [wholesale, setWholesale] = usePersistentState('printoria_wholesale', initialWholesale);
   const [quotes, setQuotes] = usePersistentState('printoria_quotes', initialQuotes);
-  const [personal, setPersonal] = usePersi
+  const [personal, setPersonal] = usePersistentState('printoria_personal', initialPersonal);
+  const [failures, setFailures] = usePersistentState('printoria_failures', initialFailures);
+  const [proceso, setProceso] = usePersistentState('printoria_proceso', initialProceso);
+  const [gastos, setGastos] = usePersistentState('printoria_gastos', initialGastos);
+  const [selectedMonth, setSelectedMonth] = usePersistentState('printoria_selectedMonth', 'all');
+  const [cola, setCola] = usePersistentState('printoria_cola', initialCola);
+  const [stock, setStock] = usePersistentState('printoria_stock', []);
+  const [addons, setAddons] = usePersistentState('printoria_addons', []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
+
+  return (
+    <Ctx.Provider value={{
+      theme, setTheme,
+      config, setConfig,
+      materials, setMaterials,
+      products, setProducts,
+      multiProducts, setMultiProducts,
+      clients, setClients,
+      sales, setSales,
+      multiSales, setMultiSales,
+      wholesale, setWholesale,
+      quotes, setQuotes,
+      personal, setPersonal,
+      failures, setFailures,
+      proceso, setProceso,
+      gastos, setGastos,
+      selectedMonth, setSelectedMonth,
+      cola, setCola,
+      stock, setStock,
+      addons, setAddons,
+      galeriaFotos, setGaleriaFotos,
+      // Indicadores de carga (útil para mostrar spinner mientras carga de Supabase)
+      supabaseReady: SUPABASE_READY,
+    }}>
+      {children}
+    </Ctx.Provider>
+  );
+}
+
+export function usePrintoria() {
+  const ctx = useContext(Ctx);
+  if (!ctx) throw new Error('usePrintoria must be inside PrintoriaProvider');
+  return ctx;
+}
