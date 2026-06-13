@@ -1,4 +1,4 @@
-﻿import { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { usePrintoria } from '../store/PrintoriaContext';
 import { initialConfig } from '../data/initialData';
 import { getNextId } from '../store/utils';
@@ -260,4 +260,123 @@ export default function Config() {
             <div>
               <label className={lbl}>Teléfono visible</label>
               <input type="text" className={inp} placeholder="8341112949" value={form.telefono || ''}
-                onChange={e => set('telefono'
+                onChange={e => set('telefono', e.target.value)} />
+            </div>
+            <div>
+              <label className={lbl}>Gmail / correo</label>
+              <input type="text" className={inp} placeholder="printoria3dmmh@gmail.com" value={form.gmail || ''}
+                onChange={e => set('gmail', e.target.value)} />
+            </div>
+            <div>
+              <label className={lbl}>Slogan</label>
+              <input type="text" className={inp} value={form.slogan || ''} onChange={e => set('slogan', e.target.value)} />
+            </div>
+            <div>
+              <label className={lbl}>Ciudad</label>
+              <input type="text" className={inp} placeholder="Victoria, Tamaulipas" value={form.ciudad || ''} onChange={e => set('ciudad', e.target.value)} />
+            </div>
+          </div>
+          <div>
+            <label className={lbl}>Sobre nosotros (texto breve)</label>
+            <textarea rows={3} className={} value={form.sobreNosotros || ''} onChange={e => set('sobreNosotros', e.target.value)} />
+          </div>
+        </div>
+      </form>
+
+      {/* Add-ons globales */}
+      <div className="bg-white border border-zinc-200 rounded-xl p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-bold text-zinc-800">Add-ons / Extras de producto</p>
+            <p className="text-xs text-zinc-500 mt-0.5">Accesorios opcionales con costo extra y stock propio. Ej: Luz LED, Cadena de llavero.</p>
+          </div>
+          <button
+            onClick={() => setEditingAddon(emptyAddon(addons))}
+            className="bg-[#96d629] hover:bg-[#78b01e] text-black font-bold px-4 py-1.5 rounded-lg text-sm transition-colors"
+          >
+            + Nuevo
+          </button>
+        </div>
+
+        {editingAddon && (
+          <AddonForm
+            data={editingAddon}
+            onSave={f => {
+              const data = { ...f }; delete data._new;
+              if (f._new) {
+                if (addons.find(a => a.id === f.id)) return alert(`${inp} resize-none`);
+                setAddons([...addons, data]);
+              } else {
+                setAddons(addons.map(a => a.id === f.id ? data : a));
+              }
+              setEditingAddon(null);
+            }}
+            onCancel={() => setEditingAddon(null)}
+          />
+        )}
+
+        {addons.length === 0 ? (
+          <p className="text-xs text-zinc-400 text-center py-4">Sin add-ons. Crea uno con el botón +</p>
+        ) : (
+          <div className="space-y-2">
+            {addons.map(a => (
+              <div key={a.id} className="flex items-center justify-between bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-2.5">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-mono text-zinc-400 bg-zinc-200 px-2 py-0.5 rounded">{a.id}</span>
+                  <span className="text-sm font-medium text-zinc-800">{a.nombre}</span>
+                  <span className="text-xs text-zinc-500">+${a.precioExtra?.toFixed(2)}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs text-zinc-400">Stock:</span>
+                    <span className={`text-xs font-bold ${a.stock <= 0 ? 'text-red-400' : a.stock < 5 ? 'text-yellow-500' : 'text-green-500'}`}>{a.stock}</span>
+                    <button
+                      onClick={() => setAddons(addons.map(x => x.id === a.id ? { ...x, stock: x.stock + 1 } : x))}
+                      className="text-xs bg-zinc-200 hover:bg-zinc-300 text-zinc-700 w-5 h-5 rounded flex items-center justify-center font-bold"
+                      title="Agregar 1 al stock"
+                    >+</button>
+                    <button
+                      onClick={() => setAddons(addons.map(x => x.id === a.id ? { ...x, stock: Math.max(0, x.stock - 1) } : x))}
+                      className="text-xs bg-zinc-200 hover:bg-zinc-300 text-zinc-700 w-5 h-5 rounded flex items-center justify-center font-bold"
+                      title="Quitar 1 del stock"
+                    >−</button>
+                  </div>
+                  <button onClick={() => setEditingAddon({ ...a })} className="text-xs text-blue-500 hover:text-blue-700 px-2 py-0.5 rounded hover:bg-blue-50">Editar</button>
+                  <button onClick={() => { if (window.confirm(`¿Eliminar add-on ${a.nombre}?`)) setAddons(addons.filter(x => x.id !== a.id)); }}
+                    className="text-xs text-red-400 hover:text-red-600 px-2 py-0.5 rounded hover:bg-red-50">✕</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Backup / Restore */}
+      <div className="bg-white border border-zinc-200 rounded-xl p-6 space-y-4">
+        <div>
+          <p className="text-sm font-bold text-zinc-800">Copia de seguridad</p>
+          <p className="text-xs text-zinc-500 mt-1">Exporta todos tus datos a un archivo JSON. Guárdalo en lugar seguro — si borras el navegador, pierdes todo sin esto.</p>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <button onClick={handleBackup}
+            className="flex items-center gap-2 bg-[#96d629] hover:bg-[#78b01e] text-black font-bold px-5 py-2 rounded-lg text-sm transition-colors">
+            ⬇ Descargar backup
+          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => fileRef.current?.click()}
+              className="flex items-center gap-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 font-semibold px-5 py-2 rounded-lg text-sm transition-colors border border-zinc-300">
+              ⬆ Restaurar backup
+            </button>
+            <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={handleRestoreFile} />
+          </div>
+        </div>
+        {restoreMsg && (
+          <p className={`text-sm font-medium ${restoreMsg.startsWith('✓') ? 'text-green-400' : 'text-red-400'}`}>
+            {restoreMsg}
+          </p>
+        )}
+        <p className="text-xs text-zinc-600">Solo restaura archivos descargados desde esta app. Datos inválidos serán ignorados.</p>
+      </div>
+    </div>
+  );
+}
