@@ -128,7 +128,7 @@ function ProductCard({ product: p, idx, onAdd, onWA, multi }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#07070f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ fontSize: 22 }}>{multi ? '🎨' : '📦'}|/span>
+                <span style={{ fontSize: 22 }}>{multi ? '🎨' : '📦'}</span>
               </div>
             </div>
             <span style={{ fontSize: 11, color: '#ffffff30', fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase' }}>Imagen próximamente</span>
