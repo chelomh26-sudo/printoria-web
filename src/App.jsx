@@ -21,64 +21,33 @@ import Stock from './pages/Stock';
 import GaleriaAdmin from './pages/GaleriaAdmin';
 import ChatPanel from './components/ChatPanel';
 
-const PAGES = {
-  dashboard: Dashboard,
-  config: Config,
-  materiales: Materiales,
-  productos: Productos,
-  productosMulti: ProductosMulti,
-  clientes: Clientes,
-  ventas: Ventas,
-  ventasMulti: VentasMulti,
-  mayoreo: Mayoreo,
-  cotizaciones: Cotizaciones,
-  personal: UsoPersonal,
-  fallas: Fallas,
-  proceso: Proceso,
-  cola: ColaImpresion,
-  stock: Stock,
-  galeria: GaleriaAdmin,
-  catalogo: CatalogoPublico,
-  finances: Finances,
-};
+const ADMIN_PASSWORD = 'Chelo@2696';
 
-function AppContent() {
-  const [current, setCurrent] = useState('dashboard');
-  const [collapsed, setCollapsed] = useState(false);
-  const [hash, setHash] = useState(window.location.hash);
-  const Page = PAGES[current] || Dashboard;
+function AdminLogin({ onLogin }) {
+  const [pwd, setPwd] = useState('');
+  const [error, setError] = useState(false);
 
-  // Listen for hash changes (reactive routing)
-  useEffect(() => {
-    const onHash = () => setHash(window.location.hash);
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
-  }, []);
-
-  // Public catalog mode: #catalogo URL -> no sidebar, just storefront
-  if (hash === '#catalogo') {
-    return (
-      <div className="min-h-screen bg-zinc-950 text-zinc-100">
-        <CatalogoPublico />
-      </div>
-    );
+  function submit(e) {
+    e.preventDefault();
+    if (pwd === ADMIN_PASSWORD) { onLogin(); }
+    else { setError(true); setPwd(''); }
   }
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: '#e1e0e0' }}>
-      <Sidebar current={current} setCurrent={setCurrent} collapsed={collapsed} setCollapsed={setCollapsed} />
-      <main className="flex-1 overflow-auto" style={{ background: '#e1e0e0' }}>
-        <Page navigate={setCurrent} />
-      </main>
-      <ChatPanel />
-    </div>
-  );
-}
-
-export default function App() {
-  return (
-    <PrintoriaProvider>
-      <AppContent />
-    </PrintoriaProvider>
-  );
-}
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#e1e0e0' }}>
+      <form onSubmit={submit} className="bg-white rounded-2xl shadow-xl p-8 w-80 space-y-5">
+        <div className="text-center space-y-2">
+          <img src="/logo.png" alt="Printoria" className="h-14 mx-auto object-contain" />
+          <p className="text-zinc-400 text-sm">Panel de administración</p>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-zinc-400 mb-1">Contraseña</label>
+          <input
+            type="password"
+            autoFocus
+            className="w-full bg-zinc-100 border border-zinc-300 rounded-lg px-4 py-2.5 text-zinc-800 text-sm focus:border-[#96d629] focus:outline-none"
+            placeholder="••••••••••"
+            value={pwd}
+            onChange={e => { setPwd(e.target.value); setError(false); }}
+          />
+        
