@@ -50,4 +50,83 @@ function AdminLogin({ onLogin }) {
             value={pwd}
             onChange={e => { setPwd(e.target.value); setError(false); }}
           />
-        
+          {error && <p className="text-red-500 text-xs mt-1">Contraseña incorrecta</p>}
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-[#96d629] hover:bg-[#7ab520] text-zinc-900 font-bold rounded-lg py-2.5 text-sm transition-colors"
+        >
+          Entrar
+        </button>
+      </form>
+    </div>
+  );
+}
+
+const PAGES = {
+  dashboard: Dashboard,
+  config: Config,
+  materiales: Materiales,
+  productos: Productos,
+  productosMulti: ProductosMulti,
+  clientes: Clientes,
+  ventas: Ventas,
+  ventasMulti: VentasMulti,
+  mayoreo: Mayoreo,
+  cotizaciones: Cotizaciones,
+  personal: UsoPersonal,
+  fallas: Fallas,
+  proceso: Proceso,
+  cola: ColaImpresion,
+  stock: Stock,
+  galeria: GaleriaAdmin,
+  catalogo: CatalogoPublico,
+  finances: Finances,
+};
+
+function AppContent() {
+  const [current, setCurrent] = useState('dashboard');
+  const [collapsed, setCollapsed] = useState(false);
+  const [hash, setHash] = useState(window.location.hash);
+  const [adminUnlocked, setAdminUnlocked] = useState(false);
+  const Page = PAGES[current] || Dashboard;
+
+  // Escucha cambios de hash para routing reactivo
+  useEffect(() => {
+    const onHash = () => setHash(window.location.hash);
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
+  // Modo catálogo público: URL con #catalogo → sin sidebar, solo vitrina
+  if (hash === '#catalogo') {
+    return (
+      <div className="min-h-screen bg-zinc-950 text-zinc-100">
+        <CatalogoPublico />
+      </div>
+    );
+  }
+
+  // Login gate para el panel admin
+  if (!adminUnlocked) {
+    return <AdminLogin onLogin={() => setAdminUnlocked(true)} />;
+  }
+
+  return (
+    <div className="flex h-screen overflow-hidden" style={{ background: '#e1e0e0' }}>
+      <Sidebar current={current} setCurrent={setCurrent} collapsed={collapsed} setCollapsed={setCollapsed} />
+      <main className="flex-1 overflow-auto" style={{ background: '#e1e0e0' }}>
+        <Page navigate={setCurrent} />
+      </main>
+      <ChatPanel />
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <PrintoriaProvider>
+      <AppContent />
+    </PrintoriaProvider>
+  );
+}
