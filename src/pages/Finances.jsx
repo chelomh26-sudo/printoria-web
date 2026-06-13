@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { usePrintoria } from '../store/PrintoriaContext';
 import { calcCostoPorGramo, calcSaleCosts, fmt, fmtN } from '../store/utils';
 
@@ -81,7 +81,7 @@ export default function Finances() {
 }
 
 function FinancesContent() {
-  const { gastos, setGastos, sales, wholesale, multiSales, products, multiProducts, materials, failures, config, selectedMonth, addons } = usePrintoria();
+  const { gastos, setGastos, sales, wholesale, multiSales, products, multiProducts, materials, failures, config, selectedMonth, addons, stock } = usePrintoria();
 
   const empty = { fecha: new Date().toISOString().slice(0, 10), categoria: 'Impresoras', descripcion: '', monto: '' };
   const [form, setForm] = useState(empty);
@@ -141,6 +141,22 @@ function FinancesContent() {
     return total;
   }, [sales, wholesale, products, materials, config, addons, selectedMonth]);
 
+  // Costo de producción del inventario actual (stock en mano)
+  const costoInventario = useMemo(() => {
+    let total = 0;
+    (stock || []).forEach(sk => {
+      const p = products.find(x => x.id === sk.productoId);
+      const m = materials.find(x => x.id === sk.materialId);
+      if (!p) return;
+      const cpg = m ? calcCostoPorGramo(m) : 0;
+      const tiempo = p.tiempoBambu * (sk.cantidad || 1);
+      const costoMat = (sk.gramosUsados || p.gramos * (sk.cantidad || 1)) * cpg;
+      const costoOp = tiempo * ((config.costLuzMinBambu ?? config.costLuzMin) + (config.costDesgasteMinBambu ?? config.costDesgasteMin));
+      total += costoMat + costoOp;
+    });
+    return total;
+  }, [stock, products, materials, config]);
+
   // Gastos registrados (todo el historial, no filtrado por mes ya que son inversiones)
   const gastosTotal = useMemo(() => gastos.reduce((s, g) => s + (parseFloat(g.monto) || 0), 0), [gastos]);
   const gastosPorCat = useMemo(() => {
@@ -151,7 +167,7 @@ function FinancesContent() {
   }, [gastos]);
 
   const gananciaBruta = ingresos - costoProduccion;
-  const gananciaNeta = gananciaBruta - gastosTotal;
+  const gananciaNeta = gananciaBruta - gastosTotal - costoInventario;
 
   function handleSave() {
     if (!form.descripcion.trim() || !form.monto) return;
@@ -191,7 +207,7 @@ function FinancesContent() {
       </div>
 
       {/* Resumen financiero */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <div className="bg-white border border-green-500/30 rounded-xl p-5">
           <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Ingresos</p>
           <p className="text-2xl font-bold text-green-400">{fmt(ingresos)}</p>
@@ -200,17 +216,24 @@ function FinancesContent() {
         <div className="bg-white border border-zinc-200 rounded-xl p-5">
           <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Costo Producción</p>
           <p className="text-2xl font-bold text-zinc-800">{fmt(costoProduccion)}</p>
-          <p className="text-xs text-zinc-500 mt-1">Materiales + operación</p>
+          <p className="text-xs text-zinc-500 mt-1">Materiales + operación (vendido)</p>
         </div>
+        <div className="bg-white border border-orange-400/30 rounded-xl p-5">
+          <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Costo Inventario</p>
+          <p className="text-2xl font-bold text-orange-400">{fmt(costoInventario)}</p>
+          <p className="text-xs text-zinc-500 mt-1">{(stock||[]).reduce((a,s)=>a+(s.cantidad||0),0)} piezas en stock</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
         <div className="bg-white border border-red-500/30 rounded-xl p-5">
           <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Total Invertido</p>
           <p className="text-2xl font-bold text-red-400">{fmt(gastosTotal)}</p>
-          <p className="text-xs text-zinc-500 mt-1">Impresoras, herramientas, etc.</p>
+          <p className="text-xs text-zinc-500 mt-1">Equipos, herramientas, materiales comprados</p>
         </div>
         <div className={`bg-white border rounded-xl p-5 ${gananciaNeta >= 0 ? 'border-[#96d629]/30' : 'border-red-500/40'}`}>
           <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Ganancia Real</p>
           <p className={`text-2xl font-bold ${gananciaNeta >= 0 ? 'text-[#96d629]' : 'text-red-400'}`}>{fmt(gananciaNeta)}</p>
-          <p className="text-xs text-zinc-500 mt-1">Ingresos − producción − inversión</p>
+          <p className="text-xs text-zinc-500 mt-1">Ingresos − producción − inventario − inversión</p>
         </div>
       </div>
 
@@ -324,4 +347,12 @@ function FinancesContent() {
           </div>
           {gastosFiltered.length > 0 && (
             <div className="border-t border-zinc-200 px-4 py-3 flex justify-between items-center">
-              <span className="text-xs text-zinc-5
+              <span className="text-xs text-zinc-500">{gastosFiltered.length} registros</span>
+              <span className="text-sm font-bold text-red-400">Total: {fmt(gastosFiltered.reduce((s, g) => s + (parseFloat(g.monto) || 0), 0))}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
