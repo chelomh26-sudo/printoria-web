@@ -276,4 +276,35 @@ export default function Ventas() {
                     <td className="py-3 px-3">
                       <div className="flex gap-1">
                         <button onClick={() => setEditing({ ...r, _new: false })} className="bg-zinc-200 hover:bg-zinc-500 text-white px-2 py-1.5 rounded text-xs">✏️</button>
-                        <button onClick={() 
+                        <button onClick={() => del(r.id)} className="bg-red-100 hover:bg-red-500 text-red-500 hover:text-white text-xs px-2 py-1 rounded transition-colors">✕</button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        {filtered.length === 0 && (
+          <div className="text-center py-12 text-zinc-400 text-sm">
+            {search ? 'Sin resultados.' : 'No hay ventas. Crea la primera.'}
+          </div>
+        )}
+      </div>
+
+      {editing && (
+        <Modal title={editing._new ? 'Nueva Venta' : `Editar ${editing.id}`} onClose={() => setEditing(null)}>
+          <VentaForm
+            data={editing}
+            products={products}
+            materials={materials}
+            clients={clients}
+            config={config}
+            onSave={save}
+            onCancel={() => setEditing(null)}
+          />
+        </Modal>
+      )}
+    </div>
+  );
+}
