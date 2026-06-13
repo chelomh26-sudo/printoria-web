@@ -1,4 +1,4 @@
-﻿import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { usePrintoria } from '../store/PrintoriaContext';
 
 function compressImage(file) {
@@ -32,8 +32,10 @@ const inp = 'w-full bg-zinc-100 border border-zinc-300 rounded-lg px-3 py-2 text
 const lbl = 'block text-xs font-medium text-zinc-400 mb-1';
 const ro = 'w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-zinc-400 text-sm';
 
+const CATEGORIAS = ['Temporada','Hogar','Negocios','Decoración','Regalos','Cocina','Juguetes/Fidget','Colección','Eventos Sociales','Macetas','Deportes','Día a día'];
+
 function empty(products) {
-  return { id: getNextId(products, 'P'), nombre: '', descripcion: '', gramos: 0, tiempoEnder: 0, tiempoBambu: 0, precioVenta: 0, publicar: false, foto: '', descripcionPublica: '', _new: true };
+  return { id: getNextId(products, 'P'), nombre: '', descripcion: '', gramos: 0, tiempoEnder: 0, tiempoBambu: 0, precioVenta: 0, publicar: false, foto: '', descripcionPublica: '', categorias: [], _new: true };
 }
 
 function ProductoForm({ data, config, onSave, onCancel }) {
@@ -159,6 +161,26 @@ function ProductoForm({ data, config, onSave, onCancel }) {
             <div>
               <label className={lbl}>Descripción pública</label>
               <textarea className={inp} rows={2} value={f.descripcionPublica} onChange={e => set('descripcionPublica', e.target.value)} placeholder="Descripción para clientes..." />
+            </div>
+            <div>
+              <label className={lbl}>Categorías (selecciona las que apliquen)</label>
+              <div className="grid grid-cols-2 gap-1.5 mt-1">
+                {CATEGORIAS.map(cat => {
+                  const cats = f.categorias || [];
+                  const checked = cats.includes(cat);
+                  return (
+                    <label key={cat} className="flex items-center gap-2 text-xs text-zinc-600 cursor-pointer select-none hover:text-zinc-800">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => set('categorias', checked ? cats.filter(c => c !== cat) : [...cats, cat])}
+                        className="w-3.5 h-3.5 accent-emerald-500 flex-shrink-0"
+                      />
+                      {cat}
+                    </label>
+                  );
+                })}
+              </div>
             </div>
           </>
         )}
