@@ -81,7 +81,7 @@ export default function Finances() {
 }
 
 function FinancesContent() {
-  const { gastos, setGastos, sales, wholesale, multiSales, products, multiProducts, materials, failures, config, selectedMonth } = usePrintoria();
+  const { gastos, setGastos, sales, wholesale, multiSales, products, multiProducts, materials, failures, config, selectedMonth, addons } = usePrintoria();
 
   const empty = { fecha: new Date().toISOString().slice(0, 10), categoria: 'Impresoras', descripcion: '', monto: '' };
   const [form, setForm] = useState(empty);
@@ -121,7 +121,14 @@ function FinancesContent() {
       const p = products.find(x => x.id === s.productoId);
       const m = materials.find(x => x.id === s.materialId);
       const c = calcSaleCosts(s, p, m, config);
-      if (c) total += c.costoMaterial + c.costoLuz + c.costoDesgaste;
+      if (c) {
+        total += c.costoMaterial + c.costoLuz + c.costoDesgaste;
+        // Costo de add-ons incluidos en la venta
+        (s.addonsIncluidos || []).forEach(aoId => {
+          const ao = (addons || []).find(a => a.id === aoId);
+          total += (ao?.costoUnitario || 0) * (s.cantidad || 1);
+        });
+      }
     });
     filterByMonth(wholesale).forEach(w => {
       const p = products.find(x => x.id === w.productoId);
@@ -132,7 +139,7 @@ function FinancesContent() {
       total += p.gramos * (w.cantidad || 1) * cpg + tiempo * (w.cantidad || 1) * (config.costLuzMin + config.costDesgasteMin);
     });
     return total;
-  }, [sales, wholesale, products, materials, config, selectedMonth]);
+  }, [sales, wholesale, products, materials, config, addons, selectedMonth]);
 
   // Gastos registrados (todo el historial, no filtrado por mes ya que son inversiones)
   const gastosTotal = useMemo(() => gastos.reduce((s, g) => s + (parseFloat(g.monto) || 0), 0), [gastos]);
@@ -317,13 +324,4 @@ function FinancesContent() {
           </div>
           {gastosFiltered.length > 0 && (
             <div className="border-t border-zinc-200 px-4 py-3 flex justify-between items-center">
-              <span className="text-xs text-zinc-500">{gastosFiltered.length} registros</span>
-              <span className="text-sm font-bold text-red-400">Total: {fmt(gastosFiltered.reduce((s, g) => s + (parseFloat(g.monto) || 0), 0))}</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
+              <span className="text-xs text-zinc-5
