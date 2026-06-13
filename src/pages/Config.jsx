@@ -1,12 +1,59 @@
 ﻿import { useState, useRef } from 'react';
 import { usePrintoria } from '../store/PrintoriaContext';
 import { initialConfig } from '../data/initialData';
+import { getNextId } from '../store/utils';
+
+function emptyAddon(addons) {
+  return { id: getNextId(addons, 'AO'), nombre: '', precioExtra: 0, stock: 0, _new: true };
+}
+
+function AddonForm({ data, onSave, onCancel }) {
+  const [f, setF] = useState({ ...data });
+  const set = (k, v) => setF(p => ({ ...p, [k]: v }));
+  const inp2 = 'w-full bg-zinc-100 border border-zinc-300 rounded-lg px-3 py-2 text-zinc-800 text-sm focus:border-[#96d629] focus:outline-none';
+  const lbl2 = 'block text-xs font-medium text-zinc-400 mb-1';
+
+  function submit(e) {
+    e.preventDefault();
+    if (!f.nombre.trim()) return alert('Nombre requerido');
+    onSave({ ...f, precioExtra: Number(f.precioExtra), stock: Number(f.stock) });
+  }
+
+  return (
+    <form onSubmit={submit} className="bg-zinc-50 border border-zinc-200 rounded-xl p-4 space-y-3 mt-3">
+      <p className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{f._new ? 'Nuevo add-on' : `Editar ${f.id}`}</p>
+      <div className="grid grid-cols-3 gap-3">
+        <div>
+          <label className={lbl2}>ID</label>
+          <input className={inp2} value={f.id} onChange={e => set('id', e.target.value.toUpperCase())} disabled={!f._new} />
+        </div>
+        <div className="col-span-2">
+          <label className={lbl2}>Nombre *</label>
+          <input className={inp2} value={f.nombre} onChange={e => set('nombre', e.target.value)} placeholder="Ej: Luz LED, Cadena llavero" />
+        </div>
+        <div>
+          <label className={lbl2}>Precio extra ($)</label>
+          <input type="number" step="0.01" min="0" className={inp2} value={f.precioExtra} onChange={e => set('precioExtra', e.target.value)} />
+        </div>
+        <div>
+          <label className={lbl2}>Stock actual</label>
+          <input type="number" min="0" step="1" className={inp2} value={f.stock} onChange={e => set('stock', e.target.value)} />
+        </div>
+      </div>
+      <div className="flex gap-2 justify-end">
+        <button type="button" onClick={onCancel} className="bg-zinc-100 hover:bg-zinc-200 text-zinc-700 px-4 py-1.5 rounded-lg text-sm">Cancelar</button>
+        <button type="submit" className="bg-[#96d629] hover:bg-[#78b01e] text-black font-bold px-4 py-1.5 rounded-lg text-sm">Guardar</button>
+      </div>
+    </form>
+  );
+}
 
 const inp = 'w-full bg-zinc-100 border border-zinc-300 rounded-lg px-3 py-2 text-zinc-800 text-sm focus:border-[#96d629] focus:outline-none';
 const lbl = 'block text-xs font-medium text-zinc-400 mb-1';
 
 export default function Config() {
-  const { config, setConfig } = usePrintoria();
+  const { config, setConfig, addons, setAddons } = usePrintoria();
+  const [editingAddon, setEditingAddon] = useState(null);
   // Merge con initialConfig para que campos nuevos tengan valor por defecto
   const [form, setForm] = useState({ ...initialConfig, ...config });
   const [saved, setSaved] = useState(false);
@@ -213,52 +260,4 @@ export default function Config() {
             <div>
               <label className={lbl}>Teléfono visible</label>
               <input type="text" className={inp} placeholder="8341112949" value={form.telefono || ''}
-                onChange={e => set('telefono', e.target.value)} />
-            </div>
-            <div>
-              <label className={lbl}>Gmail / correo</label>
-              <input type="text" className={inp} placeholder="printoria3dmmh@gmail.com" value={form.gmail || ''}
-                onChange={e => set('gmail', e.target.value)} />
-            </div>
-            <div>
-              <label className={lbl}>Slogan</label>
-              <input type="text" className={inp} value={form.slogan || ''} onChange={e => set('slogan', e.target.value)} />
-            </div>
-            <div>
-              <label className={lbl}>Ciudad</label>
-              <input type="text" className={inp} placeholder="Victoria, Tamaulipas" value={form.ciudad || ''} onChange={e => set('ciudad', e.target.value)} />
-            </div>
-          </div>
-          <div>
-            <label className={lbl}>Sobre nosotros (texto breve)</label>
-            <textarea rows={3} className={`${inp} resize-none`} value={form.sobreNosotros || ''} onChange={e => set('sobreNosotros', e.target.value)} />
-          </div>
-        </div>
-      </form>
-
-      {/* Backup / Restore */}
-      <div className="bg-white border border-zinc-200 rounded-xl p-6 space-y-4">
-        <div>
-          <p className="text-sm font-bold text-zinc-800">Copia de seguridad</p>
-          <p className="text-xs text-zinc-500 mt-1">Exporta todos tus datos a un archivo JSON. Guárdalo en lugar seguro — si borras el navegador, pierdes todo sin esto.</p>
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <button onClick={handleBackup}
-            className="flex items-center gap-2 bg-[#96d629] hover:bg-[#78b01e] text-black font-bold px-5 py-2 rounded-lg text-sm transition-colors">
-            ⬇ Descargar backup
-          </button>
-          <div className="flex items-center gap-2">
-            <button onClick={() => fileRef.current?.click()}
-              className="flex items-center gap-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 font-semibold px-5 py-2 rounded-lg text-sm transition-colors border border-zinc-300">
-              ⬆ Restaurar backup
-            </button>
-            <input ref={fileRef} type="file" accept=".json" className="hidden" onChange={handleRestoreFile} />
-          </div>
-        </div>
-        {restoreMsg && (
-          <p className={`text-sm font-medium ${restoreMsg.startsWith('✓') ? 'text-green-500' : 'text-red-500'}`}>{restoreMsg}</p>
-        )}
-      </div>
-    </div>
-  );
-}
+                onChange={e => set('telefono'
