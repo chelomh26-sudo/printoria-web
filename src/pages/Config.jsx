@@ -278,7 +278,7 @@ export default function Config() {
           </div>
           <div>
             <label className={lbl}>Sobre nosotros (texto breve)</label>
-            <textarea rows={3} className={} value={form.sobreNosotros || ''} onChange={e => set('sobreNosotros', e.target.value)} />
+            <textarea rows={3} className={`${inp} resize-none`} value={form.sobreNosotros || ''} onChange={e => set('sobreNosotros', e.target.value)} />
           </div>
         </div>
       </form>
@@ -304,7 +304,7 @@ export default function Config() {
             onSave={f => {
               const data = { ...f }; delete data._new;
               if (f._new) {
-                if (addons.find(a => a.id === f.id)) return alert(`${inp} resize-none`);
+                if (addons.find(a => a.id === f.id)) return alert(`ID ${f.id} ya existe`);
                 setAddons([...addons, data]);
               } else {
                 setAddons(addons.map(a => a.id === f.id ? data : a));
