@@ -11,10 +11,10 @@ const ESTADOS = ['PENDIENTE', 'EN PROCESO', 'TERMINADO', 'ENTREGADO', 'CANCELADO
 const IMPRESORAS = ['Bambu', 'Ender'];
 
 function emptyForm(sales) {
-  return { id: getNextId(sales, 'V'), fecha: TODAY(), clienteId: '', cantidad: 1, productoId: '', materialId: '', impresora: 'Bambu', extras: 0, estado: 'PENDIENTE', _new: true };
+  return { id: getNextId(sales, 'V'), fecha: TODAY(), clienteId: '', cantidad: 1, productoId: '', materialId: '', impresora: 'Bambu', extras: 0, addonsIncluidos: [], estado: 'PENDIENTE', _new: true };
 }
 
-function VentaForm({ data, products, materials, clients, config, onSave, onCancel }) {
+function VentaForm({ data, products, materials, clients, config, addons, onSave, onCancel }) {
   const [f, setF] = useState({ ...data });
   const set = (k, v) => setF(p => ({ ...p, [k]: v }));
 
@@ -22,6 +22,20 @@ function VentaForm({ data, products, materials, clients, config, onSave, onCance
   const material = materials.find(m => m.id === f.materialId);
   const cliente = clients.find(c => c.id === f.clienteId);
   const calcs = useMemo(() => calcSaleCosts(f, producto, material, config), [f, producto, material, config]);
+
+  const addonsIncluidos = f.addonsIncluidos || [];
+  const addonTotal = addonsIncluidos.reduce((sum, id) => {
+    const a = (addons || []).find(x => x.id === id);
+    return sum + (a ? a.precioExtra * (Number(f.cantidad) || 1) : 0);
+  }, 0);
+  const precioPedidoConAddons = (calcs?.precioPedido || 0) + addonTotal;
+  const gananciaConAddons = precioPedidoConAddons - (calcs?.costoTotal || 0);
+  const margenConAddons = precioPedidoConAddons > 0 ? gananciaConAddons / precioPedidoConAddons : 0;
+
+  function toggleAddon(id) {
+    const curr = f.addonsIncluidos || [];
+    set('addonsIncluidos', curr.includes(id) ? curr.filter(x => x !== id) : [...curr, id]);
+  }
 
   function submit(e) {
     e.preventDefault();
@@ -112,6 +126,45 @@ function VentaForm({ data, products, materials, clients, config, onSave, onCance
         )}
       </div>
 
+      {/* Add-ons opcionales */}
+      {addons && addons.length > 0 && (
+        <div className="bg-zinc-50 rounded-lg p-3 space-y-2">
+          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Add-ons / Accesorios opcionales</p>
+          <div className="space-y-1.5">
+            {addons.map(a => {
+              const checked = addonsIncluidos.includes(a.id);
+              const sinStock = a.stock <= 0 && !checked;
+              return (
+                <label key={a.id} className={`flex items-center gap-3 cursor-pointer rounded-lg px-3 py-2 border transition-colors ${checked ? 'border-[#96d629] bg-[#96d629]/8' : 'border-zinc-200 bg-white hover:border-zinc-300'} ${sinStock ? 'opacity-50' : ''}`}>
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    disabled={sinStock}
+                    onChange={() => toggleAddon(a.id)}
+                    className="accent-[#96d629]"
+                  />
+                  <div className="flex-1 flex items-center justify-between">
+                    <span className="text-sm text-zinc-800">{a.nombre}</span>
+                    <div className="flex items-center gap-3 text-xs text-zinc-500">
+                      <span className="font-medium text-zinc-700">+${a.precioExtra?.toFixed(2)} c/u</span>
+                      <span className={`${a.stock <= 0 ? 'text-red-400' : a.stock < 5 ? 'text-yellow-500' : 'text-green-500'}`}>
+                        stock: {a.stock}
+                      </span>
+                    </div>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+          {addonTotal > 0 && (
+            <p className="text-xs text-right text-zinc-500">
+              Subtotal add-ons: <span className="font-bold text-zinc-700">${addonTotal.toFixed(2)}</span>
+              {Number(f.cantidad) > 1 && <span className="text-zinc-400"> ({Number(f.cantidad)} pzas × add-ons)</span>}
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Extras */}
       <div>
         <label className={lbl}>Extras / costos adicionales ($)</label>
@@ -133,10 +186,14 @@ function VentaForm({ data, products, materials, clients, config, onSave, onCance
           <div className="space-y-1.5 text-zinc-400">
             <div className="flex justify-between"><span>Precio unitario:</span><span className="text-zinc-700">{fmt(calcs.precioUnitario)}</span></div>
             <div className="flex justify-between"><span>Precio pedido:</span><span className="text-zinc-700">{fmt(calcs.precioPedido)}</span></div>
-            <div className="flex justify-between border-t border-zinc-300 pt-1 mt-1"><span className="font-semibold">Ganancia:</span><span className={`font-bold ${calcs.ganancia >= 0 ? 'text-green-400' : 'text-red-400'}`}>{fmt(calcs.ganancia)}</span></div>
+            {addonTotal > 0 && (
+              <div className="flex justify-between"><span>Add-ons total:</span><span className="text-[#96d629] font-medium">+{fmt(addonTotal)}</span></div>
+            )}
+            <div className="flex justify-between border-t border-zinc-300 pt-1 mt-1"><span className="font-semibold">Total c/add-ons:</span><span className="text-zinc-800 font-bold">{fmt(precioPedidoConAddons)}</span></div>
+            <div className="flex justify-between"><span className="font-semibold">Ganancia:</span><span className={`font-bold ${gananciaConAddons >= 0 ? 'text-green-400' : 'text-red-400'}`}>{fmt(gananciaConAddons)}</span></div>
             <div className="flex justify-between"><span>Margen:</span>
-              <span className={`font-bold ${calcs.margen >= config.margenMinimo ? 'text-green-400' : 'text-yellow-400'}`}>
-                {(calcs.margen * 100).toFixed(1)}% {calcs.margen < config.margenMinimo ? '⚠️' : '✓'}
+              <span className={`font-bold ${margenConAddons >= config.margenMinimo ? 'text-green-400' : 'text-yellow-400'}`}>
+                {(margenConAddons * 100).toFixed(1)}% {margenConAddons < config.margenMinimo ? '⚠️' : '✓'}
               </span>
             </div>
           </div>
@@ -154,7 +211,7 @@ function VentaForm({ data, products, materials, clients, config, onSave, onCance
 const ESTADO_COLOR = { PENDIENTE: 'bg-yellow-400/15 text-yellow-300', 'EN PROCESO': 'bg-blue-400/15 text-blue-300', TERMINADO: 'bg-green-400/15 text-green-300', ENTREGADO: 'bg-zinc-200 text-zinc-600', CANCELADO: 'bg-red-400/15 text-red-300' };
 
 export default function Ventas() {
-  const { sales, setSales, proceso, setProceso, products, materials, clients, config, stock, setStock } = usePrintoria();
+  const { sales, setSales, proceso, setProceso, products, materials, clients, config, stock, setStock, addons, setAddons } = usePrintoria();
   const [editing, setEditing] = useState(null);
   const [search, setSearch] = useState('');
 
@@ -186,6 +243,15 @@ export default function Ventas() {
             s.id === stockEntry.id ? { ...s, cantidad: s.cantidad - descontar } : s
           ).filter(s => s.cantidad > 0));
         }
+      }
+      // Descontar stock de add-ons seleccionados
+      if ((data.addonsIncluidos || []).length > 0 && addons.length > 0) {
+        const qty = data.cantidad || 1;
+        setAddons(addons.map(a =>
+          (data.addonsIncluidos || []).includes(a.id)
+            ? { ...a, stock: Math.max(0, a.stock - qty) }
+            : a
+        ));
       }
       setSales([...sales, data]);
       if (!proceso.find(p => p.orderId === f.id)) {
@@ -231,80 +297,4 @@ export default function Ventas() {
         </div>
         <div className="bg-white border border-zinc-200 rounded-xl p-4">
           <p className="text-xs text-zinc-500">COSTOS</p>
-          <p className="text-xl font-bold text-red-400">{fmt(totales.costos)}</p>
-        </div>
-        <div className="bg-white border border-zinc-200 rounded-xl p-4">
-          <p className="text-xs text-zinc-500">GANANCIA</p>
-          <p className={`text-xl font-bold ${totales.ganancia >= 0 ? 'text-green-400' : 'text-red-400'}`}>{fmt(totales.ganancia)}</p>
-        </div>
-      </div>
-
-      <input className="w-full max-w-sm bg-white border border-zinc-200 rounded-lg px-3 py-2 text-zinc-800 text-sm focus:border-[#96d629] focus:outline-none placeholder-zinc-400"
-        placeholder="Buscar..." value={search} onChange={e => setSearch(e.target.value)} />
-
-      <div className="bg-white border border-zinc-200 rounded-xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="border-b border-zinc-200">
-              <tr>
-                {['ID', 'Fecha', 'Cliente', 'Producto', 'Material', 'Cant', 'Impr', 'Gramos', 'Tiempo', 'C.Total', 'P.Pedido', 'Ganancia', 'Margen', 'Estado', ''].map(h => (
-                  <th key={h} className="text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider py-3 px-3 whitespace-nowrap">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-100">
-              {filtered.map(r => {
-                const c = r._calcs;
-                return (
-                  <tr key={r.id} className="hover:bg-zinc-100/30 transition-colors">
-                    <td className="py-3 px-3 font-mono text-[#96d629]">{r.id}</td>
-                    <td className="py-3 px-3 text-zinc-400">{r.fecha}</td>
-                    <td className="py-3 px-3 text-zinc-600">{r._cliente?.nombre || r.clienteId}</td>
-                    <td className="py-3 px-3 text-zinc-800 font-medium">{r._producto?.nombre || r.productoId}</td>
-                    <td className="py-3 px-3 text-zinc-400">{r._material ? `${r._material.nombre}` : r.materialId}</td>
-                    <td className="py-3 px-3 text-zinc-600">{r.cantidad}</td>
-                    <td className="py-3 px-3 text-zinc-400">{r.impresora}</td>
-                    <td className="py-3 px-3 text-zinc-400">{c ? `${fmtN(c.gramosTotal, 1)}g` : '—'}</td>
-                    <td className="py-3 px-3 text-zinc-400">{c ? fmtTime(c.tiempoTotal) : '—'}</td>
-                    <td className="py-3 px-3 text-red-400">{c ? fmt(c.costoTotal) : '—'}</td>
-                    <td className="py-3 px-3 font-semibold text-zinc-800">{c ? fmt(c.precioPedido) : '—'}</td>
-                    <td className={`py-3 px-3 font-semibold ${c && c.ganancia >= 0 ? 'text-green-400' : 'text-red-400'}`}>{c ? fmt(c.ganancia) : '—'}</td>
-                    <td className={`py-3 px-3 text-xs font-bold ${c && c.margen >= config.margenMinimo ? 'text-green-400' : 'text-yellow-400'}`}>{c ? `${(c.margen * 100).toFixed(1)}%` : '—'}</td>
-                    <td className="py-3 px-3">
-                      <span className={`text-xs font-semibold px-2 py-1 rounded-full ${ESTADO_COLOR[r.estado] || 'bg-zinc-100 text-zinc-600'}`}>{r.estado}</span>
-                    </td>
-                    <td className="py-3 px-3">
-                      <div className="flex gap-1">
-                        <button onClick={() => setEditing({ ...r, _new: false })} className="bg-zinc-200 hover:bg-zinc-500 text-white px-2 py-1.5 rounded text-xs">✏️</button>
-                        <button onClick={() => del(r.id)} className="bg-red-100 hover:bg-red-500 text-red-500 hover:text-white text-xs px-2 py-1 rounded transition-colors">✕</button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        {filtered.length === 0 && (
-          <div className="text-center py-12 text-zinc-400 text-sm">
-            {search ? 'Sin resultados.' : 'No hay ventas. Crea la primera.'}
-          </div>
-        )}
-      </div>
-
-      {editing && (
-        <Modal title={editing._new ? 'Nueva Venta' : `Editar ${editing.id}`} onClose={() => setEditing(null)}>
-          <VentaForm
-            data={editing}
-            products={products}
-            materials={materials}
-            clients={clients}
-            config={config}
-            onSave={save}
-            onCancel={() => setEditing(null)}
-          />
-        </Modal>
-      )}
-    </div>
-  );
-}
+     
