@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { usePrintoria } from '../store/PrintoriaContext';
 import Modal from '../components/Modal';
 import { calcSaleCosts, calcCostoPorGramo, getNextId, fmt, fmtN, fmtTime, TODAY } from '../store/utils';
@@ -64,7 +64,7 @@ function VentaForm({ data, products, materials, clients, config, addons, onSave,
         </div>
       </div>
 
-      {/* Cliente ID → auto-fill */}
+      {/* Cliente ID */}
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className={lbl}>ID Cliente</label>
@@ -76,7 +76,7 @@ function VentaForm({ data, products, materials, clients, config, addons, onSave,
         </div>
       </div>
 
-      {/* Producto ID → auto-fill */}
+      {/* Producto */}
       <div className="bg-zinc-50 rounded-lg p-3 space-y-3">
         <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Producto</p>
         <div className="grid grid-cols-2 gap-3">
@@ -108,7 +108,7 @@ function VentaForm({ data, products, materials, clients, config, addons, onSave,
         )}
       </div>
 
-      {/* Material ID → auto-fill */}
+      {/* Material */}
       <div className="bg-zinc-50 rounded-lg p-3 space-y-3">
         <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Material</p>
         <div className="grid grid-cols-2 gap-3">
@@ -231,7 +231,6 @@ export default function Ventas() {
     const data = { ...f }; delete data._new;
     if (f._new) {
       if (sales.find(s => s.id === f.id)) return alert(`ID ${f.id} ya existe`);
-      // Verificar stock disponible para este producto
       const stockEntry = stock.find(s => s.productoId === f.productoId && s.cantidad > 0);
       if (stockEntry) {
         const usar = window.confirm(
@@ -244,7 +243,6 @@ export default function Ventas() {
           ).filter(s => s.cantidad > 0));
         }
       }
-      // Descontar stock de add-ons seleccionados
       if ((data.addonsIncluidos || []).length > 0 && addons.length > 0) {
         const qty = data.cantidad || 1;
         setAddons(addons.map(a =>
@@ -289,7 +287,6 @@ export default function Ventas() {
         </button>
       </div>
 
-      {/* Totals bar */}
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-white border border-zinc-200 rounded-xl p-4">
           <p className="text-xs text-zinc-500">INGRESOS</p>
@@ -297,4 +294,68 @@ export default function Ventas() {
         </div>
         <div className="bg-white border border-zinc-200 rounded-xl p-4">
           <p className="text-xs text-zinc-500">COSTOS</p>
-     
+          <p className="text-xl font-bold text-red-400">{fmt(totales.costos)}</p>
+        </div>
+        <div className="bg-white border border-zinc-200 rounded-xl p-4">
+          <p className="text-xs text-zinc-500">GANANCIA</p>
+          <p className={`text-xl font-bold ${totales.ganancia >= 0 ? 'text-green-400' : 'text-red-400'}`}>{fmt(totales.ganancia)}</p>
+        </div>
+      </div>
+
+      <input className="w-full max-w-sm bg-white border border-zinc-200 rounded-lg px-3 py-2 text-zinc-800 text-sm focus:border-[#96d629] focus:outline-none placeholder-zinc-400"
+        placeholder="Buscar..." value={search} onChange={e => setSearch(e.target.value)} />
+
+      <div className="bg-white border border-zinc-200 rounded-xl overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="border-b border-zinc-200">
+              <tr>
+                {['ID', 'Fecha', 'Cliente', 'Producto', 'Material', 'Cant', 'Impr', 'Gramos', 'Tiempo', 'C.Total', 'P.Pedido', 'Ganancia', 'Margen', 'Estado', ''].map(h => (
+                  <th key={h} className="text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider py-3 px-3 whitespace-nowrap">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-100">
+              {filtered.map(r => {
+                const c = r._calcs;
+                return (
+                  <tr key={r.id} className="hover:bg-zinc-100/30 transition-colors">
+                    <td className="py-3 px-3 font-mono text-[#96d629]">{r.id}</td>
+                    <td className="py-3 px-3 text-zinc-400">{r.fecha}</td>
+                    <td className="py-3 px-3 text-zinc-600">{r._cliente?.nombre || r.clienteId}</td>
+                    <td className="py-3 px-3 text-zinc-800 font-medium">{r._producto?.nombre || r.productoId}</td>
+                    <td className="py-3 px-3 text-zinc-400">{r._material ? `${r._material.nombre}` : r.materialId}</td>
+                    <td className="py-3 px-3 text-zinc-600">{r.cantidad}</td>
+                    <td className="py-3 px-3 text-zinc-400">{r.impresora}</td>
+                    <td className="py-3 px-3 text-zinc-400">{c ? `${fmtN(c.gramosTotal, 1)}g` : '—'}</td>
+                    <td className="py-3 px-3 text-zinc-400">{c ? fmtTime(c.tiempoTotal) : '—'}</td>
+                    <td className="py-3 px-3 text-red-400">{c ? fmt(c.costoTotal) : '—'}</td>
+                    <td className="py-3 px-3 font-semibold text-zinc-800">{c ? fmt(c.precioPedido) : '—'}</td>
+                    <td className={`py-3 px-3 font-semibold ${c && c.ganancia >= 0 ? 'text-green-400' : 'text-red-400'}`}>{c ? fmt(c.ganancia) : '—'}</td>
+                    <td className={`py-3 px-3 text-xs font-bold ${c && c.margen >= config.margenMinimo ? 'text-green-400' : 'text-yellow-400'}`}>{c ? `${(c.margen * 100).toFixed(1)}%` : '—'}</td>
+                    <td className="py-3 px-3">
+                      <span className={`text-xs font-semibold px-2 py-1 rounded-full ${ESTADO_COLOR[r.estado] || 'bg-zinc-100 text-zinc-600'}`}>{r.estado}</span>
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="flex gap-1">
+                        <button onClick={() => setEditing({ ...r, _new: false })} className="bg-zinc-200 hover:bg-zinc-500 text-white px-2 py-1.5 rounded text-xs">✏️</button>
+                        <button onClick={() => del(r.id)} className="bg-red-600/80 hover:bg-red-600 text-white px-2 py-1.5 rounded text-xs">🗑️</button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {filtered.length === 0 && <tr><td colSpan={15} className="py-10 text-center text-zinc-500">Sin ventas</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {editing && (
+        <Modal title={editing._new ? 'Nueva Venta' : `Editar ${editing.id}`} onClose={() => setEditing(null)}>
+          <VentaForm data={editing} products={products} materials={materials} clients={clients} config={config} addons={addons} onSave={save} onCancel={() => setEditing(null)} />
+        </Modal>
+      )}
+    </div>
+  );
+}
