@@ -2,10 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import { usePrintoria } from '../store/PrintoriaContext';
 import { fmt } from '../store/utils';
 
-/* ââ Fixed category order âââââââââââââââââââââââââââââââââ */
-const CATEGORIAS_ORDER = ['Temporada','Hogar','Negocios','DecoraciÃ³n','Regalos','Cocina','Juguetes/Fidget','ColecciÃ³n','Eventos Sociales','Macetas','Deportes','DÃ­a a dÃ­a'];
+/* ── Fixed category order ───────────────────────────────── */
+const CATEGORIAS_ORDER = ['Temporada','Hogar','Negocios','Decoración','Regalos','Cocina','Juguetes/Fidget','Colección','Eventos Sociales','Macetas','Deportes','Día a día'];
 
-/* ââ Colors per card index âââââââââââââââââââââââââââââââââ */
+/* ── Colors per card index ───────────────────────────────── */
 const CARD_ACCENTS = [
   { grad: 'from-[#96d629] to-[#5c891a]', glow: '#96d62940', border: '#96d629' },
   { grad: 'from-orange-400 to-orange-600', glow: '#f9731640', border: '#fb923c' },
@@ -15,14 +15,14 @@ const CARD_ACCENTS = [
   { grad: 'from-amber-400 to-amber-600', glow: '#f59e0b40', border: '#fbbf24' },
 ];
 
-/* ââ WhatsApp helper âââââââââââââââââââââââââââââââââââââââ */
+/* ── WhatsApp helper ─────────────────────────────────────── */
 function waLink(num, msg) {
   const n = (num || '').replace(/\D/g, '');
   if (!n) return '#';
   return `https://wa.me/${n}?text=${encodeURIComponent(msg)}`;
 }
 
-/* ââ Hero orbs + mascots on sides âââââââââââââââââââââââââ */
+/* ── Hero orbs + mascots on sides ───────────────────────── */
 
 function Orbs() {
   return (
@@ -47,7 +47,7 @@ function Orbs() {
         animation: 'orbFloat 12s ease-in-out infinite',
       }}/>
 
-      {/* mascot1 â escena completa con impresora y herramientas â lado izquierdo */}
+      {/* mascot1 — escena completa con impresora y herramientas — lado izquierdo */}
       <div style={{
         position: 'absolute', left: 0, bottom: 0,
         width: 'clamp(180px, 26vw, 380px)',
@@ -59,7 +59,7 @@ function Orbs() {
         }}/>
       </div>
 
-      {/* mascot4 â impresora "IMPRIMIENDO POSIBILIDADES" â lado derecho */}
+      {/* mascot4 — impresora "IMPRIMIENDO POSIBILIDADES" — lado derecho */}
       <div style={{
         position: 'absolute', right: 0, bottom: 0,
         width: 'clamp(180px, 26vw, 360px)',
@@ -74,15 +74,15 @@ function Orbs() {
   );
 }
 
-/* ââ Stats strip â value props (sin nÃºmeros inventados) âââ */
+/* ── Stats strip — value props (sin números inventados) ─── */
 const STATS = [
-  { icon: 'â¡', label: 'Pedidos rÃ¡pidos', color: '#96d629' },
-  { icon: 'ð¨', label: '100% personalizable', color: '#22d3ee' },
-  { icon: 'ð', label: 'Entrega local VIC', color: '#a78bfa' },
-  { icon: 'ð¬', label: 'CuÃ©ntame tu idea', color: '#fb923c' },
+  { icon: '⚡', label: 'Pedidos rápidos', color: '#96d629' },
+  { icon: '🎨', label: '100% personalizable', color: '#22d3ee' },
+  { icon: '📍', label: 'Entrega local VIC', color: '#a78bfa' },
+  { icon: '💬', label: 'Cuéntame tu idea', color: '#fb923c' },
 ];
 
-/* ââ Product card ââââââââââââââââââââââââââââââââââââââââââ */
+/* ── Product card ────────────────────────────────────────── */
 function ProductCard({ product: p, idx, onAdd, onWA, multi }) {
   const acc = CARD_ACCENTS[idx % CARD_ACCENTS.length];
   const [hovered, setHovered] = useState(false);
@@ -118,17 +118,17 @@ function ProductCard({ product: p, idx, onAdd, onWA, multi }) {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
               <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#07070f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ fontSize: 22 }}>{multi ? 'ð¨' : 'ð¦'}</span>
+                <span style={{ fontSize: 22 }}>{multi ? '🎨' : '📦'}</span>
               </div>
             </div>
-            <span style={{ fontSize: 11, color: '#ffffff30', fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase' }}>Imagen prÃ³ximamente</span>
+            <span style={{ fontSize: 11, color: '#ffffff30', fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase' }}>Imagen próximamente</span>
           </div>
         )}
         {/* Multi badge */}
         {multi && (
           <span className="absolute top-3 left-3 text-xs font-black px-2.5 py-1 rounded-full"
             style={{ background: 'rgba(168,85,247,0.3)', color: '#c084fc', border: '1px solid #a855f740' }}>
-            ð¨ Multi-color
+            🎨 Multi-color
           </span>
         )}
       </div>
@@ -173,7 +173,7 @@ function ProductCard({ product: p, idx, onAdd, onWA, multi }) {
   );
 }
 
-/* ââ Gallery real photo card ââââââââââââââââââââââââââââââ */
+/* ── Gallery real photo card ────────────────────────────── */
 const PHOTO_ACCENTS = ['#96d629','#22d3ee','#a78bfa','#fb923c','#f472b6','#fbbf24'];
 function GalleryPhotoCard({ foto, idx }) {
   const accent = PHOTO_ACCENTS[idx % PHOTO_ACCENTS.length];
@@ -209,14 +209,14 @@ function GalleryPhotoCard({ foto, idx }) {
   );
 }
 
-/* ââ Gallery placeholder tiles ââââââââââââââââââââââââââââ */
+/* ── Gallery placeholder tiles ──────────────────────────── */
 const GALLERY_PLACEHOLDERS = [
-  { emoji: 'ð¨ï¸', label: 'PrÃ³ximamente', color: '#96d629' },
-  { emoji: 'ð¨', label: 'PrÃ³ximamente', color: '#22d3ee' },
-  { emoji: 'ð¦', label: 'PrÃ³ximamente', color: '#a78bfa' },
-  { emoji: 'â¨', label: 'PrÃ³ximamente', color: '#fb923c' },
-  { emoji: 'ð§', label: 'PrÃ³ximamente', color: '#f472b6' },
-  { emoji: 'ð', label: 'PrÃ³ximamente', color: '#fbbf24' },
+  { emoji: '🖨️', label: 'Próximamente', color: '#96d629' },
+  { emoji: '🎨', label: 'Próximamente', color: '#22d3ee' },
+  { emoji: '📦', label: 'Próximamente', color: '#a78bfa' },
+  { emoji: '✨', label: 'Próximamente', color: '#fb923c' },
+  { emoji: '🔧', label: 'Próximamente', color: '#f472b6' },
+  { emoji: '🌟', label: 'Próximamente', color: '#fbbf24' },
 ];
 function GalleryPlaceholder({ idx }) {
   const g = GALLERY_PLACEHOLDERS[idx % GALLERY_PLACEHOLDERS.length];
@@ -242,7 +242,7 @@ function GalleryPlaceholder({ idx }) {
   );
 }
 
-/* ââ Main component ââââââââââââââââââââââââââââââââââââââââ */
+/* ── Main component ──────────────────────────────────────── */
 export default function CatalogoPublico() {
   const { products, multiProducts, config, galeriaFotos } = usePrintoria();
   const [cart, setCart] = useState([]);
@@ -286,15 +286,15 @@ export default function CatalogoPublico() {
   }
   function sendWhatsApp() {
     if (!phone) return;
-    const lines = cart.map(c => `â¢ ${c.nombre} x${c.qty} = $${(c.precio * c.qty).toFixed(2)}`).join('\n');
-    const msg = `Â¡Hola PRINTORIA 3D! ð¨ï¸\n\nQuiero hacer este pedido:\n\n${lines}\n\nð° Total: ${fmt(cartTotal)}\n\nÂ¡Quedo en espera! ð`;
+    const lines = cart.map(c => `• ${c.nombre} x${c.qty} = $${(c.precio * c.qty).toFixed(2)}`).join('\n');
+    const msg = `¡Hola PRINTORIA 3D! 🖨️\n\nQuiero hacer este pedido:\n\n${lines}\n\n💰 Total: ${fmt(cartTotal)}\n\n¡Quedo en espera! 😊`;
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
   }
 
   return (
     <div style={{ background: '#080810', color: '#e8e8f0', fontFamily: 'system-ui, -apple-system, sans-serif', minHeight: '100vh' }}>
 
-      {/* ââ GLOBAL ANIMATIONS ââ */}
+      {/* ── GLOBAL ANIMATIONS ── */}
       <style>{`
         @keyframes orbFloat {
           0%, 100% { transform: translateY(0px) scale(1); }
@@ -321,7 +321,7 @@ export default function CatalogoPublico() {
         html { scroll-behavior: smooth; }
       `}</style>
 
-      {/* ââ FIXED NAVBAR ââ */}
+      {/* ── FIXED NAVBAR ── */}
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         background: navScrolled ? 'rgba(8,8,16,0.92)' : 'transparent',
@@ -344,12 +344,12 @@ export default function CatalogoPublico() {
               style={{ fontSize: 13, fontWeight: 700, color: '#aaaacc', textDecoration: 'none', letterSpacing: 1, transition: 'color .2s' }}
               onMouseEnter={e => e.currentTarget.style.color = '#96d629'}
               onMouseLeave={e => e.currentTarget.style.color = '#aaaacc'}>
-              {['CatÃ¡logo', 'Nosotros', 'GalerÃ­a', 'Contacto'][i]}
+              {['Catálogo', 'Nosotros', 'Galería', 'Contacto'][i]}
             </a>
           ))}
         </div>
 
-        {/* Ver catÃ¡logo pill */}
+        {/* Ver catálogo pill */}
         <a href="#catalogo"
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
@@ -361,54 +361,9 @@ export default function CatalogoPublico() {
           }}
           onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04)'; }}
           onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}>
-          Ver catÃ¡logo â
+          Ver catálogo ↓
         </a>
-      </nav>
-
-      {/* ââ HERO ââ */}
-      <section style={{
-        position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', paddingTop: 64,
-        backgroundImage: 'linear-gradient(rgba(8,8,16,0.88), rgba(8,8,16,0.92)), url(/impresora1.png)',
-        backgroundSize: 'cover', backgroundPosition: 'center',
-      }}>
-        <Orbs />
-
-        {/* Filament lines decoration */}
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-          {[
-            { top:'10%', left:'-5%', w:400, rotate:-30, color:'#96d629' },
-            { top:'60%', right:'-5%', w:350, rotate:20,  color:'#a855f7' },
-            { top:'80%', left:'10%', w:250, rotate:10,   color:'#06b6d4' },
-            { top:'20%', right:'10%',w:200, rotate:-15,  color:'#f97316' },
-          ].map((l, i) => (
-            <div key={i} style={{
-              position: 'absolute', height: 1,
-              width: l.w, top: l.top, left: l.left, right: l.right,
-              background: `linear-gradient(90deg, transparent, ${l.color}60, transparent)`,
-              transform: `rotate(${l.rotate}deg)`,
-            }}/>
-          ))}
-        </div>
-
-        <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: '40px 24px', maxWidth: 700, margin: '0 auto' }}>
-          {/* Badge */}
-          <div className="animate-fadeup" style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: 'rgba(150,214,41,0.12)', border: '1px solid rgba(150,214,41,0.3)',
-            borderRadius: 100, padding: '6px 16px', marginBottom: 24,
-          }}>
-            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#96d629', animation: 'pulse-wa 2s infinite' }}/>
-            <span style={{ fontSize: 11, fontWeight: 800, color: '#96d629', letterSpacing: 3, textTransform: 'uppercase' }}>
-              ImpresiÃ³n 3D Â· {config.ciudad || 'Victoria, Tamaulipas'}
-            </span>
-          </div>
-
-          {/* Logo grande centrado */}
-          <div className="animate-fadeup" style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
-            {/* Glow ring behind logo */}
-            <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{
-                position: 'absolute', width: '140%', height: '140%', borderRadius: '50%',
+      </nav>', borderRadius: '50%',
                 background: 'radial-gradient(circle, #96d62928 0%, transparent 65%)',
                 animation: 'orbFloat 5s ease-in-out infinite',
               }}/>
@@ -443,9 +398,9 @@ export default function CatalogoPublico() {
             }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 12px 40px #96d62960'; }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 32px #96d62940'; }}>
-              Ver catÃ¡logo â
+              Ver catálogo ↓
             </a>
-            <a href={`https://wa.me/${phone}?text=${encodeURIComponent('Â¡Hola! Tengo una idea para imprimir en 3D ð¨ï¸')}`}
+            <a href={`https://wa.me/${phone}?text=${encodeURIComponent('¡Hola! Tengo una idea para imprimir en 3D 🖨️')}`}
               target="_blank" rel="noreferrer"
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -457,7 +412,7 @@ export default function CatalogoPublico() {
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'; }}>
-              ð¬ Cotizar idea
+              💬 Cotizar idea
             </a>
           </div>
         </div>
@@ -470,7 +425,7 @@ export default function CatalogoPublico() {
         </div>
       </section>
 
-      {/* ââ STATS ââ */}
+      {/* ── STATS ── */}
       <section style={{ padding: '0 24px', margin: '-1px 0' }}>
         <div style={{
           maxWidth: 900, margin: '0 auto',
@@ -492,56 +447,31 @@ export default function CatalogoPublico() {
         </div>
       </section>
 
-      {/* ââ QUIÃNES SOMOS ââ */}
+      {/* ── QUIÉNES SOMOS ── */}
       <section id="nosotros" style={{
         padding: '80px 24px', position: 'relative', overflow: 'hidden',
         backgroundImage: 'linear-gradient(rgba(8,8,16,0.85), rgba(8,8,16,0.85)), url(/impresora2.png)',
         backgroundSize: 'cover', backgroundPosition: 'center',
       }}>
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, #a855f715, transparent 70%)', pointerEvents: 'none' }}/>
-        {/* mascot3 â mascota imprimiendo â decoraciÃ³n lateral izquierda */}
-        <div style={{ position: 'absolute', left: -20, bottom: 0, height: 300, pointerEvents: 'none', opacity: 0.45 }}>
-          <img src="/mascot3.png" alt="" style={{
-            height: '100%', width: 'auto',
-            filter: 'drop-shadow(0 0 20px #96d62930)',
-          }}/>
-        </div>
-        {/* mascot2 â mascota con herramienta â decoraciÃ³n lateral derecha */}
-        <div style={{ position: 'absolute', right: -20, bottom: 0, height: 280, pointerEvents: 'none', opacity: 0.4 }}>
-          <img src="/mascot2.png" alt="" style={{
-            height: '100%', width: 'auto',
-            filter: 'drop-shadow(0 0 20px #a855f730)',
-          }}/>
-        </div>
-        <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 56 }}>
-            <div style={{ display: 'inline-block', background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.25)', borderRadius: 100, padding: '6px 16px', marginBottom: 16 }}>
-              <span style={{ fontSize: 11, fontWeight: 800, color: '#c084fc', letterSpacing: 3, textTransform: 'uppercase' }}>QuiÃ©nes somos</span>
-            </div>
-            <h2 style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontWeight: 900, color: 'white', marginBottom: 16, lineHeight: 1.1 }}>
-              Fabricamos lo que<br/>
-              <span style={{ background: 'linear-gradient(135deg, #a855f7, #06b6d4)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>imaginas</span>
-            </h2>
-            <p style={{ fontSize: 17, color: '#8888aa', maxWidth: 540, margin: '0 auto', lineHeight: 1.7 }}>
-              {config.sobreNosotros || 'Somos un taller de impresiÃ³n 3D local comprometido con la calidad, rapidez y personalizaciÃ³n. Cada pieza es Ãºnica, fabricada con precisiÃ³n capa por capa para hacerla exactamente como la necesitas.'}
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, #a855f715, transparent 70%)', pointerEvents: 'none' }}/>cada con precisión capa por capa para hacerla exactamente como la necesitas.'}
             </p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20 }}>
             {[
               {
-                icon: 'ð¯', title: '100% Personalizado',
-                desc: 'No vendemos productos genÃ©ricos. Fabricamos exactamente lo que imaginas.',
+                icon: '🎯', title: '100% Personalizado',
+                desc: 'No vendemos productos genéricos. Fabricamos exactamente lo que imaginas.',
                 color: '#96d629', mascot: '/mascot5.png',
               },
               {
-                icon: 'â¡', title: 'Entrega rÃ¡pida',
-                desc: 'ProducciÃ³n local. Sin esperas de semanas ni costos de envÃ­o extras.',
+                icon: '⚡', title: 'Entrega rápida',
+                desc: 'Producción local. Sin esperas de semanas ni costos de envío extras.',
                 color: '#22d3ee', mascot: '/mascot7.png',
               },
               {
-                icon: 'ð¬', title: 'AtenciÃ³n directa',
-                desc: 'Â¿Tienes una idea? MÃ¡ndanos un mensaje y la hacemos realidad juntos.',
+                icon: '💬', title: 'Atención directa',
+                desc: '¿Tienes una idea? Mándanos un mensaje y la hacemos realidad juntos.',
                 color: '#a78bfa', mascot: '/mascot8.png',
               },
             ].map(f => (
@@ -549,7 +479,7 @@ export default function CatalogoPublico() {
                 style={{ background: '#0e0e1a', border: `1px solid ${f.color}25`, borderRadius: 20, padding: '32px 28px', transition: 'all .3s', position: 'relative', overflow: 'hidden' }}
                 onMouseEnter={e => { e.currentTarget.style.border = `1px solid ${f.color}60`; e.currentTarget.style.boxShadow = `0 0 30px ${f.color}15`; }}
                 onMouseLeave={e => { e.currentTarget.style.border = `1px solid ${f.color}25`; e.currentTarget.style.boxShadow = 'none'; }}>
-                {/* Mascot contextual â bottom-right de cada card, PNG transparente */}
+                {/* Mascot contextual — bottom-right de cada card, PNG transparente */}
                 <img src={f.mascot} alt="" style={{
                   position: 'absolute', right: -8, bottom: -8, height: 120,
                   opacity: 0.6, pointerEvents: 'none',
@@ -564,7 +494,7 @@ export default function CatalogoPublico() {
         </div>
       </section>
 
-      {/* ââ CATÃLOGO ââ */}
+      {/* ── CATÁLOGO ── */}
       <section id="catalogo" style={{
         padding: '80px 24px', position: 'relative',
         backgroundImage: 'linear-gradient(rgba(8,8,16,0.87), rgba(8,8,16,0.87)), url(/impresora3.png)',
@@ -576,7 +506,7 @@ export default function CatalogoPublico() {
           {/* Header */}
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <div style={{ display: 'inline-block', background: 'rgba(150,214,41,0.1)', border: '1px solid rgba(150,214,41,0.25)', borderRadius: 100, padding: '6px 16px', marginBottom: 16 }}>
-              <span style={{ fontSize: 11, fontWeight: 800, color: '#96d629', letterSpacing: 3, textTransform: 'uppercase' }}>CatÃ¡logo</span>
+              <span style={{ fontSize: 11, fontWeight: 800, color: '#96d629', letterSpacing: 3, textTransform: 'uppercase' }}>Catálogo</span>
             </div>
             <h2 style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontWeight: 900, color: 'white', marginBottom: 12, lineHeight: 1.1 }}>
               Nuestros productos
@@ -608,68 +538,30 @@ export default function CatalogoPublico() {
           )}
 
           {/* Products grid */}
-          {allPublished.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '80px 0' }}>
-              <div style={{ fontSize: 64, marginBottom: 16 }}>ð¦</div>
-              <p style={{ fontSize: 20, fontWeight: 700, color: '#666688' }}>PrÃ³ximamente productos</p>
-              <p style={{ color: '#444466', marginTop: 8 }}>
-                Mientras tanto, Â¡escrÃ­benos tu idea personalizada!
-              </p>
-              <a href={`https://wa.me/${phone}?text=${encodeURIComponent('Â¡Hola Printoria! Tengo una idea para imprimir ð¨ï¸')}`}
-                target="_blank" rel="noreferrer"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 24, background: 'linear-gradient(135deg,#25d366,#128c4e)', color: 'white', fontWeight: 800, padding: '12px 28px', borderRadius: 100, textDecoration: 'none' }}>
-                ð¬ EscrÃ­benos
-              </a>
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
-              {filtered.map((p, idx) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                  idx={idx}
-                  multi={p.multi}
-                  onAdd={() => addToCart({ id: p.id, nombre: p.nombre, precio: p.precioVenta })}
-                  onWA={waLink(phone, `Â¡Hola Printoria! ð¨ï¸ Me interesa el producto:\n\n*${p.nombre}*\nPrecio: ${fmt(p.precioVenta)}\n\nÂ¿EstÃ¡ disponible? ð`)}
-                />
-              ))}
-              {filtered.length === 0 && (
-                <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: 40, color: '#666688' }}>
-                  No hay productos en esta categorÃ­a todavÃ­a
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ââ GALERÃA ââ */}
-      <section id="galeria" style={{
-        padding: '80px 24px', position: 'relative',
-        backgroundImage: 'linear-gradient(rgba(8,8,16,0.86), rgba(8,8,16,0.86)), url(/impresora1.png)',
+          {allPublished.length === 0 ?      backgroundImage: 'linear-gradient(rgba(8,8,16,0.86), rgba(8,8,16,0.86)), url(/impresora1.png)',
         backgroundSize: 'cover', backgroundPosition: 'center',
       }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(6,182,212,0.3), transparent)' }}/>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <div style={{ display: 'inline-block', background: 'rgba(6,182,212,0.1)', border: '1px solid rgba(6,182,212,0.25)', borderRadius: 100, padding: '6px 16px', marginBottom: 16 }}>
-              <span style={{ fontSize: 11, fontWeight: 800, color: '#22d3ee', letterSpacing: 3, textTransform: 'uppercase' }}>GalerÃ­a</span>
+              <span style={{ fontSize: 11, fontWeight: 800, color: '#22d3ee', letterSpacing: 3, textTransform: 'uppercase' }}>Galería</span>
             </div>
             <h2 style={{ fontSize: 'clamp(28px, 5vw, 44px)', fontWeight: 900, color: 'white', marginBottom: 12 }}>
               Nuestro trabajo
             </h2>
-            <p style={{ color: '#8888aa', fontSize: 15 }}>AquÃ­ verÃ¡s fotos reales de todo lo que hacemos Â· PrÃ³ximamente</p>
+            <p style={{ color: '#8888aa', fontSize: 15 }}>Aquí verás fotos reales de todo lo que hacemos · Próximamente</p>
           </div>
 
           {galeriaFotos.length > 0 ? (
-            /* ââ FOTOS REALES ââ */
+            /* ── FOTOS REALES ── */
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 16 }}>
               {galeriaFotos.map((f, i) => (
                 <GalleryPhotoCard key={f.id} foto={f} idx={i} />
               ))}
             </div>
           ) : (
-            /* ââ PLACEHOLDER â sin fotos aÃºn ââ */
+            /* ── PLACEHOLDER — sin fotos aún ── */
             <>
               <div style={{
                 border: '2px dashed rgba(6,182,212,0.2)',
@@ -686,15 +578,15 @@ export default function CatalogoPublico() {
                   </div>
                 </div>
                 <h3 style={{ fontSize: 20, fontWeight: 900, color: '#ffffff80', marginBottom: 8 }}>
-                  Â¡Pronto aquÃ­ verÃ¡s nuestras creaciones!
+                  ¡Pronto aquí verás nuestras creaciones!
                 </h3>
                 <p style={{ color: '#444466', fontSize: 14, maxWidth: 380, margin: '0 auto 20px' }}>
-                  Estamos construyendo nuestra galerÃ­a. Mientras tanto sÃ­guenos en Instagram para ver los Ãºltimos trabajos.
+                  Estamos construyendo nuestra galería. Mientras tanto síguenos en Instagram para ver los últimos trabajos.
                 </p>
                 {config.instagram && (
                   <a href={`https://instagram.com/${config.instagram}`} target="_blank" rel="noreferrer"
                     style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)', color: 'white', fontWeight: 800, fontSize: 14, padding: '12px 28px', borderRadius: 100, textDecoration: 'none', boxShadow: '0 4px 20px #fd1d1d30' }}>
-                    ð¸ Seguir en @{config.instagram}
+                    📸 Seguir en @{config.instagram}
                   </a>
                 )}
               </div>
@@ -706,54 +598,19 @@ export default function CatalogoPublico() {
         </div>
       </section>
 
-      {/* ââ CTA IDEA ââ */}
+      {/* ── CTA IDEA ── */}
       <section style={{
         padding: '80px 24px', position: 'relative', overflow: 'hidden',
         backgroundImage: 'linear-gradient(rgba(8,8,16,0.82), rgba(8,8,16,0.86)), url(/impresora3.png)',
         backgroundSize: 'cover', backgroundPosition: 'center',
-      }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(150,214,41,0.06), rgba(168,85,247,0.06))' }}/>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(168,85,247,0.3), transparent)' }}/>
-        {/* mascot8 â mascota con telÃ©fono WhatsApp â PNG transparente */}
-        <div style={{
-          position: 'absolute', right: 0, bottom: 0,
-          height: 'clamp(200px, 28vw, 340px)',
-          pointerEvents: 'none',
-        }}>
-          <img src="/mascot8.png" alt="" style={{
-            height: '100%', width: 'auto', display: 'block',
-            opacity: 0.85,
-            filter: 'drop-shadow(0 0 30px #25d36640)',
-          }}/>
-        </div>
-        <div style={{ maxWidth: 640, margin: '0 auto', textAlign: 'center', position: 'relative' }}>
-          <h2 style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontWeight: 900, color: 'white', marginBottom: 16, lineHeight: 1.1 }}>
-            Â¿Tienes una<br/>
-            <span style={{ background: 'linear-gradient(135deg, #96d629, #22d3ee)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>idea en mente?</span>
-          </h2>
-          <p style={{ fontSize: 18, color: '#8888aa', marginBottom: 36, lineHeight: 1.6 }}>
-            CuÃ©ntanos quÃ© quieres y te damos precio en menos de 24 horas.
-          </p>
-          <a href={`https://wa.me/${phone}?text=${encodeURIComponent('Â¡Hola Printoria! ð¨ï¸ Tengo una idea que me gustarÃ­a hacer realidad. Â¿Me pueden ayudar?')}`}
-            target="_blank" rel="noreferrer"
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 12,
-              background: 'linear-gradient(135deg, #25d366, #128c4e)',
-              color: 'white', fontWeight: 900, fontSize: 18,
-              padding: '18px 40px', borderRadius: 100, textDecoration: 'none',
-              boxShadow: '0 8px 40px #25d36650', transition: 'all .2s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04)'; e.currentTarget.style.boxShadow = '0 12px 50px #25d36670'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 40px #25d36650'; }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      }}>13 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
             </svg>
             Mandar mensaje
           </a>
         </div>
       </section>
 
-      {/* ââ CONTACTO ââ */}
+      {/* ── CONTACTO ── */}
       <section id="contacto" style={{
         padding: '80px 24px',
         backgroundImage: 'linear-gradient(rgba(8,8,16,0.88), rgba(8,8,16,0.88)), url(/impresora2.png)',
@@ -761,15 +618,15 @@ export default function CatalogoPublico() {
       }}>
         <div style={{ position: 'absolute', left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)' }}/>
         <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
-          <h2 style={{ fontSize: 'clamp(28px, 5vw, 44px)', fontWeight: 900, color: 'white', marginBottom: 12 }}>EncuÃ©ntranos</h2>
-          <p style={{ color: '#8888aa', marginBottom: 40, fontSize: 16 }}>SÃ­guenos y mantente al dÃ­a con nuestros proyectos</p>
+          <h2 style={{ fontSize: 'clamp(28px, 5vw, 44px)', fontWeight: 900, color: 'white', marginBottom: 12 }}>Encuéntranos</h2>
+          <p style={{ color: '#8888aa', marginBottom: 40, fontSize: 16 }}>Síguenos y mantente al día con nuestros proyectos</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center' }}>
             {config.whatsapp && (
               <a href={`https://wa.me/${phone}`} target="_blank" rel="noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'linear-gradient(135deg, #25d366, #128c4e)', color: 'white', fontWeight: 800, fontSize: 15, padding: '14px 28px', borderRadius: 16, textDecoration: 'none', boxShadow: '0 4px 20px #25d36640', flex: '1 1 200px', justifyContent: 'center', transition: 'transform .2s' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'linear-gradient(135deg, #25d366, #128c4e)', color: 'white', fontWeight: 800, fontSize: 15, padding: '14px 28px', borderRadius: 16, textDecoration: 'none', boxShadow: '0 4px 20px #25d36640$', flex: '1 1 200px', justifyContent: 'center', transition: 'transform .2s' }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
                 onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
-                ð¬ WhatsApp
+                💬 WhatsApp
               </a>
             )}
             {config.instagram && (
@@ -777,15 +634,7 @@ export default function CatalogoPublico() {
                 style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)', color: 'white', fontWeight: 800, fontSize: 15, padding: '14px 28px', borderRadius: 16, textDecoration: 'none', flex: '1 1 200px', justifyContent: 'center', transition: 'transform .2s' }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
                 onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
-                ð¸ @{config.instagram}
-              </a>
-            )}
-            {config.facebook && (
-              <a href={`https://facebook.com/${config.facebook}`} target="_blank" rel="noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'linear-gradient(135deg, #1877f2, #0a5db5)', color: 'white', fontWeight: 800, fontSize: 15, padding: '14px 28px', borderRadius: 16, textDecoration: 'none', flex: '1 1 200px', justifyContent: 'center', transition: 'transform .2s' }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
-                👍 Facebook
+                📸 @{config.instagram}
               </a>
             )}
             {config.gmail && (
@@ -793,64 +642,36 @@ export default function CatalogoPublico() {
                 style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(234,67,53,0.15)', border: '1px solid rgba(234,67,53,0.3)', color: '#ff6b6b', fontWeight: 800, fontSize: 15, padding: '14px 28px', borderRadius: 16, textDecoration: 'none', flex: '1 1 200px', justifyContent: 'center', transition: 'transform .2s' }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
                 onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
-                âï¸ {config.gmail}
+                ♡️ {config.gmail}
               </a>
             )}
           </div>
         </div>
       </section>
 
-      {/* ââ FOOTER ââ */}
+      {/* ── FOOTER ── */}
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '40px 24px', textAlign: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
           <img src="/logo-oficial.png" alt="Printoria 3D VIC" style={{ height: 60, objectFit: 'contain', opacity: 0.85 }} />
         </div>
-        <p style={{ color: '#444466', fontSize: 13 }}>Â© 2026 Â· Hecho con â¤ï¸ en {config.ciudad || 'Victoria, Tamaulipas'}</p>
+        <p style={{ color: '#444466', fontSize: 13 }}>© 2026 · Hecho con ❤️ en {config.ciudad || 'Victoria, Tamaulipas'}</p>
       </footer>
-
-      {/* ââ FLOATING WhatsApp button (single, always bottom-right) ââ */}
-      <a href={`https://wa.me/${phone}?text=${encodeURIComponent('Â¡Hola Printoria! Me gustarÃ­a hacer un pedido ð¨ï¸')}`}
-        target="_blank" rel="noreferrer"
-        style={{
-          position: 'fixed', bottom: 24, right: 24, zIndex: 200,
-          width: 60, height: 60, borderRadius: '50%',
-          background: 'linear-gradient(135deg, #25d366, #128c4e)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 24px #25d36680',
-          animation: 'pulse-wa 2.5s ease infinite',
-        }}>
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-        </svg>
-      </a>
-
-      {/* ââ CART BUTTON (bottom-left when active) ââ */}
-      {cartCount > 0 && (
-        <button onClick={() => setCartOpen(true)}
-          style={{
-            position: 'fixed', bottom: 24, left: 24, zIndex: 190,
-            background: 'linear-gradient(135deg, #96d629, #5c891a)',
-            color: '#0a1200', fontWeight: 900, fontSize: 14,
-            padding: '14px 22px', borderRadius: 100,
-            border: 'none', cursor: 'pointer',
-            boxShadow: '0 4px 24px #96d62960',
-            display: 'flex', alignItems: 'center', gap: 8,
-            transition: 'all .2s',
+tion: 'all .2s',
           }}
           onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.04)'}
           onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
-          ð {cartCount} Â· {fmt(cartTotal)}
+          🛒 {cartCount} · {fmt(cartTotal)}
         </button>
       )}
 
-      {/* ââ CART MODAL ââ */}
+      {/* ── CART MODAL ── */}
       {cartOpen && (
         <div onClick={e => { if (e.target === e.currentTarget) setCartOpen(false); }}
           style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', zIndex: 200, padding: 16 }}>
           <div style={{ background: '#0e0e1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 24, width: '100%', maxWidth: 480, padding: 28, maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-              <h3 style={{ fontSize: 22, fontWeight: 900, color: 'white' }}>ð Tu pedido</h3>
-              <button onClick={() => setCartOpen(false)} style={{ background: 'none', border: 'none', color: '#666688', fontSize: 22, cursor: 'pointer' }}>â</button>
+              <h3 style={{ fontSize: 22, fontWeight: 900, color: 'white' }}>🛒 Tu pedido</h3>
+              <button onClick={() => setCartOpen(false)} style={{ background: 'none', border: 'none', color: '#666688', fontSize: 22, cursor: 'pointer' }}>✕</button>
             </div>
             <div style={{ overflowY: 'auto', flex: 1, marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
               {cart.map(c => (
@@ -861,7 +682,7 @@ export default function CatalogoPublico() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <button onClick={() => updateQty(c.id, c.qty - 1)}
-                      style={{ width: 30, height: 30, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', border: 'none', color: 'white', fontWeight: 900, fontSize: 16, cursor: 'pointer' }}>â</button>
+                      style={{ width: 30, height: 30, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', border: 'none', color: 'white', fontWeight: 900, fontSize: 16, cursor: 'pointer' }}>−</button>
                     <span style={{ width: 24, textAlign: 'center', fontWeight: 800, color: 'white' }}>{c.qty}</span>
                     <button onClick={() => updateQty(c.id, c.qty + 1)}
                       style={{ width: 30, height: 30, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', border: 'none', color: 'white', fontWeight: 900, fontSize: 16, cursor: 'pointer' }}>+</button>
@@ -871,26 +692,25 @@ export default function CatalogoPublico() {
               ))}
             </div>
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 20 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14 }}>Total</span>
-                <span style={{ color: 'white', fontWeight: 900, fontSize: 20 }}>{fmt(cartTotal)}</span>
-              </div>
-              {cart.length === 0 ? (
-                <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontSize: 13, padding: '8px 0' }}>
-                  Tu carrito estÃ¡ vacÃ­o
-                </p>
-              ) : (
-                <button onClick={sendWhatsApp} style={{
-                  width: '100%', background: '#96d629', color: 'black', fontWeight: 900,
-                  fontSize: 15, padding: '13px 0', borderRadius: 12, border: 'none', cursor: 'pointer',
-                }}>
-                  ð± Pedir por WhatsApp
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <div>
+                  <p style={{ fontSize: 12, color: '#666688', fontWeight: 600 }}>Total</p>
+                  <p style={{ fontSize: 28, fontWeight: 900, color: '#96d629' }}>{fmt(cartTotal)}</p>
+                </div>
+                <button onClick={sendWhatsApp}
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'linear-gradient(135deg, #25d366, #128c4e)', color: 'white', fontWeight: 900, fontSize: 15, padding: '14px 24px', borderRadius: 14, border: 'none', cursor: 'pointer', boxShadow: '0 4px 20px #25d36640' }}>
+                  💬 Pedir por WhatsApp
                 </button>
-              )}
+              </div>
+              <button onClick={() => { setCart([]); setCartOpen(false); }}
+                style={{ background: 'none', border: 'none', color: '#444466', fontSize: 12, cursor: 'pointer', width: '100%', fontWeight: 600 }}>
+                Vaciar carrito
+              </button>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 }
