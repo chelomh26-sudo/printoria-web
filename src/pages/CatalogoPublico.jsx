@@ -2,18 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { usePrintoria } from '../store/PrintoriaContext';
 import { fmt } from '../store/utils';
 
-/* ── Category detector ───────────────────────────────────── */
-function getCategoria(nombre = '', desc = '') {
-  const n = (nombre + ' ' + desc).toLowerCase();
-  if (n.match(/hogar|casa|cocina|baño|sala|recamara|taza|vaso|plato/)) return 'Hogar';
-  if (n.match(/llave|accesorio|joya|anillo|pulsera|collar|aretes/)) return 'Accesorios';
-  if (n.match(/organizador|soporte|holder|porta|rack|caja|contenedor/)) return 'Utilidades';
-  if (n.match(/regalo|decor|figura|estatua|arte|diseño|personaliz/)) return 'Decoración';
-  if (n.match(/juguete|toy|niño|educativ|escuela|aprender/)) return 'Educativo';
-  return 'General';
-}
-
-const CATS = ['Todos', 'Hogar', 'Accesorios', 'Utilidades', 'Decoración', 'Educativo', 'General'];
+/* ── Fixed category order ───────────────────────────────── */
+const CATEGORIAS_ORDER = ['Temporada','Hogar','Negocios','Decoración','Regalos','Cocina','Juguetes/Fidget','Colección','Eventos Sociales','Macetas','Deportes','Día a día'];
 
 /* ── Colors per card index ───────────────────────────────── */
 const CARD_ACCENTS = [
@@ -263,12 +253,15 @@ export default function CatalogoPublico() {
   const simples = products.filter(p => p.publicar);
   const multis   = multiProducts.filter(p => p.publicar);
   const allPublished = [
-    ...simples.map(p => ({ ...p, multi: false, cat: getCategoria(p.nombre, p.descripcion || '') })),
-    ...multis.map(p => ({ ...p, multi: true,  cat: getCategoria(p.nombre, p.descripcion || '') })),
+    ...simples.map(p => ({ ...p, multi: false })),
+    ...multis.map(p => ({ ...p, multi: true })),
   ];
 
-  const filtered = activeCat === 'Todos' ? allPublished : allPublished.filter(p => p.cat === activeCat);
-  const activeCats = ['Todos', ...new Set(allPublished.map(p => p.cat))];
+  const usedCats = new Set(allPublished.flatMap(p => p.categorias || []));
+  const activeCats = ['Todos', ...CATEGORIAS_ORDER.filter(c => usedCats.has(c))];
+  const filtered = activeCat === 'Todos'
+    ? allPublished
+    : allPublished.filter(p => (p.categorias || []).includes(activeCat));
 
   const cartTotal = cart.reduce((s, c) => s + c.precio * c.qty, 0);
   const cartCount = cart.reduce((s, c) => s + c.qty, 0);
