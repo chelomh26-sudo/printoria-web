@@ -35,7 +35,7 @@ const ro = 'w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-zin
 const CATEGORIAS = ['Temporada','Hogar','Negocios','Decoración','Regalos','Cocina','Juguetes/Fidget','Colección','Eventos Sociales','Macetas','Deportes','Día a día'];
 
 function empty(products) {
-  return { id: getNextId(products, 'P'), nombre: '', descripcion: '', gramos: 0, tiempoEnder: 0, tiempoBambu: 0, precioVenta: 0, publicar: false, foto: '', descripcionPublica: '', categorias: [], _new: true };
+  return { id: getNextId(products, 'P'), nombre: '', descripcion: '', gramos: 0, tiempoEnder: 0, tiempoBambu: 0, precioVenta: 0, publicar: false, foto: '', descripcionPublica: '', categorias: [], videoUrl: '', _new: true };
 }
 
 function ProductoForm({ data, config, onSave, onCancel }) {
@@ -163,6 +163,10 @@ function ProductoForm({ data, config, onSave, onCancel }) {
               <textarea className={inp} rows={2} value={f.descripcionPublica} onChange={e => set('descripcionPublica', e.target.value)} placeholder="Descripción para clientes..." />
             </div>
             <div>
+              <label className={lbl}>Video del producto (URL de YouTube)</label>
+              <input className={inp} value={f.videoUrl || ''} onChange={e => set('videoUrl', e.target.value)} placeholder="https://youtube.com/watch?v=..." />
+            </div>
+                        <div>
               <label className={lbl}>Categorías (selecciona las que apliquen)</label>
               <div className="grid grid-cols-2 gap-1.5 mt-1">
                 {CATEGORIAS.map(cat => {
