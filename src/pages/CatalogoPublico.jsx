@@ -134,7 +134,7 @@ function CompactCard({ product: p, onOpen }) {
 }
 
 /* ── Product detail modal ── */
-function ProductDetailModal({ product: p, onClose, waHref }) {
+function ProductDetailModal({ product: p, onClose, waHref, onAdd }) {
   const embedUrl = getYoutubeEmbed(p.videoUrl);
   return (
     <div
@@ -221,7 +221,20 @@ function ProductDetailModal({ product: p, onClose, waHref }) {
             }}>✓ Disponible</span>
           </div>
 
-          <a href={waHref} target="_blank" rel="noreferrer"
+          <div style={{ display: 'flex', gap: 10, flexDirection: 'column' }}>
+              <button
+                onClick={() => { onAdd?.(); onClose(); }}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                  background: 'linear-gradient(135deg,#a78bfa,#7c3aed)',
+                  color: 'white', fontWeight: 800, fontSize: 15,
+                  padding: '14px 28px', borderRadius: 100,
+                  border: 'none', cursor: 'pointer', width: '100%',
+                }}
+              >
+                <span style={{ fontSize: 20 }}>{"\u{1F6D2}"}</span> Agregar al carrito
+              </button>
+              <a href={waHref} target="_blank" rel="noreferrer"
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
               background: 'linear-gradient(135deg, #25d366, #128c4e)',
@@ -231,6 +244,7 @@ function ProductDetailModal({ product: p, onClose, waHref }) {
             }}>
             💬 Pedir por WhatsApp
           </a>
+            </div>
         </div>
       </div>
     </div>
@@ -1057,6 +1071,7 @@ export default function CatalogoPublico() {
         <ProductDetailModal
           product={selectedProduct}
           onClose={() => setSelectedProduct(null)}
+          onAdd={() => { addToCart({ id: selectedProduct.id, nombre: selectedProduct.nombre, precio: selectedProduct.precioVenta }); }}
           waHref={waLink(phone, `¡Hola Printoria! 🖨️ Me interesa el producto:\n\n*${selectedProduct.nombre}*\nPrecio: ${fmt(selectedProduct.precioVenta)}\n\n¿Está disponible? 😊`)}
         />
       )}
