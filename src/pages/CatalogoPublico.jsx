@@ -200,7 +200,11 @@ function ProductCard({ product: p, idx, onAdd, onWA, multi, onOpen }) {
 
   return (
     <div
-      className="relative flex flex-col rounded-2xl overflow-hidden transition-all duration-300 cursor-default group"
+      onClick={() => onOpen?.()}
+      onTouchEnd={e => { e.preventDefault(); onOpen?.(); }}
+      role="button"
+      tabIndex={0}
+      className="relative flex flex-col rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer group"
       style={{
         background: '#0e0e1a',
         border: `1.5px solid ${hovered ? acc.border : '#ffffff12'}`,
@@ -719,6 +723,35 @@ export default function CatalogoPublico() {
             </div>
           )}
 
+          {/* Category filter pills */}
+          {allPublished.length > 0 && (() => {
+            const cats = ['Todos', ...new Set(allPublished.flatMap(p => p.categorias || []))].filter(Boolean);
+            if (cats.length <= 1) return null;
+            return (
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+                {cats.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCat(cat)}
+                    style={{
+                      padding: '6px 16px',
+                      borderRadius: 100,
+                      border: activeCat === cat ? 'none' : '1px solid rgba(255,255,255,0.15)',
+                      background: activeCat === cat ? 'linear-gradient(135deg,#a78bfa,#7c3aed)' : 'rgba(255,255,255,0.06)',
+                      color: 'white',
+                      fontWeight: activeCat === cat ? 700 : 400,
+                      fontSize: 13,
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            );
+          })()}
           {/* Products grid */}
           {allPublished.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '80px 0' }}>
@@ -734,7 +767,7 @@ export default function CatalogoPublico() {
               </a>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, calc(50vw - 20px)), 1fr))', gap: 24 }}>
               {filtered.map((p, idx) => (
                 <ProductCard
                   key={p.id}
