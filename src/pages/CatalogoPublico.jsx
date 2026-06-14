@@ -95,7 +95,12 @@ function CompactCard({ product: p, onOpen }) {
   return (
     <button
       onClick={onOpen}
-      onTouchEnd={e => { e.preventDefault(); onOpen(); }}
+      onTouchStart={e => { e.currentTarget._tx = e.touches[0].clientX; e.currentTarget._ty = e.touches[0].clientY; }}
+      onTouchEnd={e => {
+        const dx = Math.abs(e.changedTouches[0].clientX - (e.currentTarget._tx||0));
+        const dy = Math.abs(e.changedTouches[0].clientY - (e.currentTarget._ty||0));
+        if (dx < 10 && dy < 10) { e.preventDefault(); onOpen(); }
+      }}
       style={{
         flex: '0 0 auto', width: 148,
         background: '#0e0e1a',
@@ -239,7 +244,12 @@ function ProductCard({ product: p, idx, onAdd, onWA, multi, onOpen }) {
   return (
     <div
       onClick={() => onOpen?.()}
-      onTouchEnd={e => { e.preventDefault(); onOpen?.(); }}
+      onTouchStart={e => { e.currentTarget._tx = e.touches[0].clientX; e.currentTarget._ty = e.touches[0].clientY; }}
+      onTouchEnd={e => {
+        const dx = Math.abs(e.changedTouches[0].clientX - (e.currentTarget._tx||0));
+        const dy = Math.abs(e.changedTouches[0].clientY - (e.currentTarget._ty||0));
+        if (dx < 10 && dy < 10) { e.preventDefault(); onOpen?.(); }
+      }}
       role="button"
       tabIndex={0}
       className="relative flex flex-col rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer group"
