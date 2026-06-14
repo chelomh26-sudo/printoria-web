@@ -90,6 +90,44 @@ function getYoutubeEmbed(url) {
   return m ? `https://www.youtube.com/embed/${m[1]}?rel=0` : null;
 }
 
+/* ── Compact card for category rows ── */
+function CompactCard({ product: p, onOpen }) {
+  return (
+    <button
+      onClick={onOpen}
+      onTouchEnd={e => { e.preventDefault(); onOpen(); }}
+      style={{
+        flex: '0 0 auto', width: 148,
+        background: '#0e0e1a',
+        border: '1.5px solid rgba(255,255,255,0.1)',
+        borderRadius: 16, overflow: 'hidden',
+        cursor: 'pointer', textAlign: 'left', padding: 0,
+        transition: 'border-color 0.2s',
+      }}
+      onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(167,139,250,0.6)'}
+      onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'}
+    >
+      <img
+        src={p.foto || '/mascot1.png'}
+        alt={p.nombre}
+        style={{ width: '100%', height: 120, objectFit: 'cover', display: 'block' }}
+        onError={e => { e.target.src = '/mascot1.png'; }}
+      />
+      <div style={{ padding: '8px 10px 10px' }}>
+        <p style={{ color: 'white', fontSize: 12, fontWeight: 600, margin: 0, lineHeight: 1.3,
+          overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+          {p.nombre}
+        </p>
+        <p style={{ color: '#a78bfa', fontSize: 13, fontWeight: 800, margin: '5px 0 0' }}>
+          {typeof p.precioVenta === 'number'
+            ? new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(p.precioVenta)
+            : p.precioVenta}
+        </p>
+      </div>
+    </button>
+  );
+}
+
 /* ── Product detail modal ── */
 function ProductDetailModal({ product: p, onClose, waHref }) {
   const embedUrl = getYoutubeEmbed(p.videoUrl);
@@ -700,92 +738,41 @@ export default function CatalogoPublico() {
             <p style={{ fontSize: 16, color: '#8888aa' }}>Selecciona y pide directamente por WhatsApp</p>
           </div>
 
-          {/* Category filter pills */}
-          {allPublished.length > 0 && (
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 40 }}>
-              {activeCats.map(cat => {
-                const isActive = activeCat === cat;
-                return (
-                  <button key={cat} onClick={() => setActiveCat(cat)}
-                    style={{
-                      padding: '10px 22px', borderRadius: 100,
-                      fontWeight: 800, fontSize: 13, cursor: 'pointer',
-                      border: isActive ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                      background: isActive ? 'linear-gradient(135deg, #96d629, #5c891a)' : 'rgba(255,255,255,0.04)',
-                      color: isActive ? '#0a1200' : '#aaaacc',
-                      transition: 'all .2s',
-                      boxShadow: isActive ? '0 4px 16px #96d62940' : 'none',
-                    }}>
-                    {cat}
-                  </button>
-                );
-              })}
+          {/* Products by category - horizontal scroll */}
+          {allPublished.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '80px 0' }}>
+              <div style={{ fontSize: 64, marginBottom: 16 }}>{"\u{1F4E6}"}</div>
+              <p style={{ fontSize: 20, fontWeight: 600, color: 'rgba(255,255,255,0.5)' }}>Pronto habrá productos aquí</p>
             </div>
-          )}
-
-          {/* Category filter pills */}
-          {allPublished.length > 0 && (() => {
-            const cats = ['Todos', ...new Set(allPublished.flatMap(p => p.categorias || []))].filter(Boolean);
-            if (cats.length <= 1) return null;
+          ) : (() => {
+            const allCats = [...new Set(allPublished.flatMap(p => p.categorias || []))].filter(Boolean);
+            const uncategorized = allPublished.filter(p => !p.categorias || p.categorias.length === 0);
+            const sections = allCats.length > 0
+              ? [...allCats.map(cat => ({ label: cat, prods: allPublished.filter(p => (p.categorias || []).includes(cat)) })),
+                 ...(uncategorized.length > 0 ? [{ label: 'Otros', prods: uncategorized }] : [])]
+              : [{ label: null, prods: allPublished }];
             return (
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
-                {cats.map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => setActiveCat(cat)}
-                    style={{
-                      padding: '6px 16px',
-                      borderRadius: 100,
-                      border: activeCat === cat ? 'none' : '1px solid rgba(255,255,255,0.15)',
-                      background: activeCat === cat ? 'linear-gradient(135deg,#a78bfa,#7c3aed)' : 'rgba(255,255,255,0.06)',
-                      color: 'white',
-                      fontWeight: activeCat === cat ? 700 : 400,
-                      fontSize: 13,
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      transition: 'all 0.2s',
-                    }}
-                  >
-                    {cat}
-                  </button>
+              <div>
+                {sections.map(({ label, prods }) => (
+                  <div key={label || 'all'} style={{ marginBottom: 32 }}>
+                    {label && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                        <h3 style={{ color: 'white', fontSize: 17, fontWeight: 700, margin: 0 }}>{label}</h3>
+                        <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+                        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>{prods.length} producto{prods.length !== 1 ? 's' : ''}</span>
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 8,
+                      scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                      {prods.map(p => (
+                        <CompactCard key={p.id} product={p} onOpen={() => setSelectedProduct(p)} />
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             );
           })()}
-          {/* Products grid */}
-          {allPublished.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '80px 0' }}>
-              <div style={{ fontSize: 64, marginBottom: 16 }}>📦</div>
-              <p style={{ fontSize: 20, fontWeight: 700, color: '#666688' }}>Próximamente productos</p>
-              <p style={{ color: '#444466', marginTop: 8 }}>
-                Mientras tanto, ¡escríbenos tu idea personalizada!
-              </p>
-              <a href={`https://wa.me/${phone}?text=${encodeURIComponent('¡Hola Printoria! Tengo una idea para imprimir 🖨️')}`}
-                target="_blank" rel="noreferrer"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 24, background: 'linear-gradient(135deg,#25d366,#128c4e)', color: 'white', fontWeight: 800, padding: '12px 28px', borderRadius: 100, textDecoration: 'none' }}>
-                💬 Escríbenos
-              </a>
-            </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, calc(50vw - 20px)), 1fr))', gap: 24 }}>
-              {filtered.map((p, idx) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                  idx={idx}
-                  multi={p.multi}
-                  onAdd={() => addToCart({ id: p.id, nombre: p.nombre, precio: p.precioVenta })}
-                  onOpen={() => setSelectedProduct(p)}
-                  onWA={waLink(phone, `¡Hola Printoria! 🖨️ Me interesa el producto:\n\n*${p.nombre}*\nPrecio: ${fmt(p.precioVenta)}\n\n¿Está disponible? 😊`)}
-                />
-              ))}
-              {filtered.length === 0 && (
-                <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: 40, color: '#666688' }}>
-                  No hay productos en esta categoría todavía
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </section>
 
