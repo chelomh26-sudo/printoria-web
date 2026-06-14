@@ -194,7 +194,7 @@ function ProductDetailModal({ product: p, onClose, waHref }) {
   );
 }
 
-function ProductCard({ product: p, idx, onAdd, onWA, multi }) {
+function ProductCard({ product: p, idx, onAdd, onWA, multi, onOpen }) {
   const acc = CARD_ACCENTS[idx % CARD_ACCENTS.length];
   const [hovered, setHovered] = useState(false);
 
@@ -742,6 +742,7 @@ export default function CatalogoPublico() {
                   idx={idx}
                   multi={p.multi}
                   onAdd={() => addToCart({ id: p.id, nombre: p.nombre, precio: p.precioVenta })}
+                  onOpen={() => setSelectedProduct(p)}
                   onWA={waLink(phone, `¡Hola Printoria! 🖨️ Me interesa el producto:\n\n*${p.nombre}*\nPrecio: ${fmt(p.precioVenta)}\n\n¿Está disponible? 😊`)}
                 />
               ))}
