@@ -658,7 +658,7 @@ export default function CatalogoPublico() {
               },
             ].map(f => (
               <div key={f.title}
-                onClick={onOpen} style={{ cursor: 'pointer', background: '#0e0e1a', border: `1px solid ${f.color}25`, borderRadius: 20, padding: '32px 28px', transition: 'all .3s', position: 'relative', overflow: 'hidden' }}
+                onClick={() => onOpen?.()} style={{ cursor: 'pointer', background: '#0e0e1a', border: `1px solid ${f.color}25`, borderRadius: 20, padding: '32px 28px', transition: 'all .3s', position: 'relative', overflow: 'hidden' }}
                 onMouseEnter={e => { e.currentTarget.style.border = `1px solid ${f.color}60`; e.currentTarget.style.boxShadow = `0 0 30px ${f.color}15`; }}
                 onMouseLeave={e => { e.currentTarget.style.border = `1px solid ${f.color}25`; e.currentTarget.style.boxShadow = 'none'; }}>
                 {/* Mascot contextual — bottom-right de cada card, PNG transparente */}
