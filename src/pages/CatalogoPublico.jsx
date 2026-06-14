@@ -363,7 +363,52 @@ export default function CatalogoPublico() {
           onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}>
           Ver catálogo ↓
         </a>
-      </nav>', borderRadius: '50%',
+      </nav>
+
+      {/* ── HERO ── */}
+      <section style={{
+        position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', paddingTop: 64,
+        backgroundImage: 'linear-gradient(rgba(8,8,16,0.88), rgba(8,8,16,0.92)), url(/impresora1.png)',
+        backgroundSize: 'cover', backgroundPosition: 'center',
+      }}>
+        <Orbs />
+
+        {/* Filament lines decoration */}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+          {[
+            { top:'10%', left:'-5%', w:400, rotate:-30, color:'#96d629' },
+            { top:'60%', right:'-5%', w:350, rotate:20,  color:'#a855f7' },
+            { top:'80%', left:'10%', w:250, rotate:10,   color:'#06b6d4' },
+            { top:'20%', right:'10%',w:200, rotate:-15,  color:'#f97316' },
+          ].map((l, i) => (
+            <div key={i} style={{
+              position: 'absolute', height: 1,
+              width: l.w, top: l.top, left: l.left, right: l.right,
+              background: `linear-gradient(90deg, transparent, ${l.color}60, transparent)`,
+              transform: `rotate(${l.rotate}deg)`,
+            }}/>
+          ))}
+        </div>
+
+        <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: '40px 24px', maxWidth: 700, margin: '0 auto' }}>
+          {/* Badge */}
+          <div className="animate-fadeup" style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: 'rgba(150,214,41,0.12)', border: '1px solid rgba(150,214,41,0.3)',
+            borderRadius: 100, padding: '6px 16px', marginBottom: 24,
+          }}>
+            <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#96d629', animation: 'pulse-wa 2s infinite' }}/>
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#96d629', letterSpacing: 3, textTransform: 'uppercase' }}>
+              Impresión 3D · {config.ciudad || 'Victoria, Tamaulipas'}
+            </span>
+          </div>
+
+          {/* Logo grande centrado */}
+          <div className="animate-fadeup" style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
+            {/* Glow ring behind logo */}
+            <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{
+                position: 'absolute', width: '140%', height: '140%', borderRadius: '50%',
                 background: 'radial-gradient(circle, #96d62928 0%, transparent 65%)',
                 animation: 'orbFloat 5s ease-in-out infinite',
               }}/>
@@ -453,7 +498,32 @@ export default function CatalogoPublico() {
         backgroundImage: 'linear-gradient(rgba(8,8,16,0.85), rgba(8,8,16,0.85)), url(/impresora2.png)',
         backgroundSize: 'cover', backgroundPosition: 'center',
       }}>
-        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, #a855f715, transparent 70%)', pointerEvents: 'none' }}/>cada con precisión capa por capa para hacerla exactamente como la necesitas.'}
+        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, #a855f715, transparent 70%)', pointerEvents: 'none' }}/>
+        {/* mascot3 — mascota imprimiendo — decoración lateral izquierda */}
+        <div style={{ position: 'absolute', left: -20, bottom: 0, height: 300, pointerEvents: 'none', opacity: 0.45 }}>
+          <img src="/mascot3.png" alt="" style={{
+            height: '100%', width: 'auto',
+            filter: 'drop-shadow(0 0 20px #96d62930)',
+          }}/>
+        </div>
+        {/* mascot2 — mascota con herramienta — decoración lateral derecha */}
+        <div style={{ position: 'absolute', right: -20, bottom: 0, height: 280, pointerEvents: 'none', opacity: 0.4 }}>
+          <img src="/mascot2.png" alt="" style={{
+            height: '100%', width: 'auto',
+            filter: 'drop-shadow(0 0 20px #a855f730)',
+          }}/>
+        </div>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <div style={{ display: 'inline-block', background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.25)', borderRadius: 100, padding: '6px 16px', marginBottom: 16 }}>
+              <span style={{ fontSize: 11, fontWeight: 800, color: '#c084fc', letterSpacing: 3, textTransform: 'uppercase' }}>Quiénes somos</span>
+            </div>
+            <h2 style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontWeight: 900, color: 'white', marginBottom: 16, lineHeight: 1.1 }}>
+              Fabricamos lo que<br/>
+              <span style={{ background: 'linear-gradient(135deg, #a855f7, #06b6d4)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>imaginas</span>
+            </h2>
+            <p style={{ fontSize: 17, color: '#8888aa', maxWidth: 540, margin: '0 auto', lineHeight: 1.7 }}>
+              {config.sobreNosotros || 'Somos un taller de impresión 3D local comprometido con la calidad, rapidez y personalización. Cada pieza es única, fabricada con precisión capa por capa para hacerla exactamente como la necesitas.'}
             </p>
           </div>
 
@@ -538,7 +608,45 @@ export default function CatalogoPublico() {
           )}
 
           {/* Products grid */}
-          {allPublished.length === 0 ?      backgroundImage: 'linear-gradient(rgba(8,8,16,0.86), rgba(8,8,16,0.86)), url(/impresora1.png)',
+          {allPublished.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '80px 0' }}>
+              <div style={{ fontSize: 64, marginBottom: 16 }}>📦</div>
+              <p style={{ fontSize: 20, fontWeight: 700, color: '#666688' }}>Próximamente productos</p>
+              <p style={{ color: '#444466', marginTop: 8 }}>
+                Mientras tanto, ¡escríbenos tu idea personalizada!
+              </p>
+              <a href={`https://wa.me/${phone}?text=${encodeURIComponent('¡Hola Printoria! Tengo una idea para imprimir 🖨️')}`}
+                target="_blank" rel="noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 24, background: 'linear-gradient(135deg,#25d366,#128c4e)', color: 'white', fontWeight: 800, padding: '12px 28px', borderRadius: 100, textDecoration: 'none' }}>
+                💬 Escríbenos
+              </a>
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
+              {filtered.map((p, idx) => (
+                <ProductCard
+                  key={p.id}
+                  product={p}
+                  idx={idx}
+                  multi={p.multi}
+                  onAdd={() => addToCart({ id: p.id, nombre: p.nombre, precio: p.precioVenta })}
+                  onWA={waLink(phone, `¡Hola Printoria! 🖨️ Me interesa el producto:\n\n*${p.nombre}*\nPrecio: ${fmt(p.precioVenta)}\n\n¿Está disponible? 😊`)}
+                />
+              ))}
+              {filtered.length === 0 && (
+                <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: 40, color: '#666688' }}>
+                  No hay productos en esta categoría todavía
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── GALERÍA ── */}
+      <section id="galeria" style={{
+        padding: '80px 24px', position: 'relative',
+        backgroundImage: 'linear-gradient(rgba(8,8,16,0.86), rgba(8,8,16,0.86)), url(/impresora1.png)',
         backgroundSize: 'cover', backgroundPosition: 'center',
       }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(6,182,212,0.3), transparent)' }}/>
@@ -603,7 +711,42 @@ export default function CatalogoPublico() {
         padding: '80px 24px', position: 'relative', overflow: 'hidden',
         backgroundImage: 'linear-gradient(rgba(8,8,16,0.82), rgba(8,8,16,0.86)), url(/impresora3.png)',
         backgroundSize: 'cover', backgroundPosition: 'center',
-      }}>13 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      }}>
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(150,214,41,0.06), rgba(168,85,247,0.06))' }}/>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: 'linear-gradient(90deg, transparent, rgba(168,85,247,0.3), transparent)' }}/>
+        {/* mascot8 — mascota con teléfono WhatsApp — PNG transparente */}
+        <div style={{
+          position: 'absolute', right: 0, bottom: 0,
+          height: 'clamp(200px, 28vw, 340px)',
+          pointerEvents: 'none',
+        }}>
+          <img src="/mascot8.png" alt="" style={{
+            height: '100%', width: 'auto', display: 'block',
+            opacity: 0.85,
+            filter: 'drop-shadow(0 0 30px #25d36640)',
+          }}/>
+        </div>
+        <div style={{ maxWidth: 640, margin: '0 auto', textAlign: 'center', position: 'relative' }}>
+          <h2 style={{ fontSize: 'clamp(32px, 6vw, 52px)', fontWeight: 900, color: 'white', marginBottom: 16, lineHeight: 1.1 }}>
+            ¿Tienes una<br/>
+            <span style={{ background: 'linear-gradient(135deg, #96d629, #22d3ee)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>idea en mente?</span>
+          </h2>
+          <p style={{ fontSize: 18, color: '#8888aa', marginBottom: 36, lineHeight: 1.6 }}>
+            Cuéntanos qué quieres y te damos precio en menos de 24 horas.
+          </p>
+          <a href={`https://wa.me/${phone}?text=${encodeURIComponent('¡Hola Printoria! 🖨️ Tengo una idea que me gustaría hacer realidad. ¿Me pueden ayudar?')}`}
+            target="_blank" rel="noreferrer"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 12,
+              background: 'linear-gradient(135deg, #25d366, #128c4e)',
+              color: 'white', fontWeight: 900, fontSize: 18,
+              padding: '18px 40px', borderRadius: 100, textDecoration: 'none',
+              boxShadow: '0 8px 40px #25d36650', transition: 'all .2s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04)'; e.currentTarget.style.boxShadow = '0 12px 50px #25d36670'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 8px 40px #25d36650'; }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
             </svg>
             Mandar mensaje
           </a>
@@ -623,7 +766,7 @@ export default function CatalogoPublico() {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, justifyContent: 'center' }}>
             {config.whatsapp && (
               <a href={`https://wa.me/${phone}`} target="_blank" rel="noreferrer"
-                style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'linear-gradient(135deg, #25d366, #128c4e)', color: 'white', fontWeight: 800, fontSize: 15, padding: '14px 28px', borderRadius: 16, textDecoration: 'none', boxShadow: '0 4px 20px #25d36640$', flex: '1 1 200px', justifyContent: 'center', transition: 'transform .2s' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'linear-gradient(135deg, #25d366, #128c4e)', color: 'white', fontWeight: 800, fontSize: 15, padding: '14px 28px', borderRadius: 16, textDecoration: 'none', boxShadow: '0 4px 20px #25d36640', flex: '1 1 200px', justifyContent: 'center', transition: 'transform .2s' }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
                 onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
                 💬 WhatsApp
@@ -642,7 +785,7 @@ export default function CatalogoPublico() {
                 style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(234,67,53,0.15)', border: '1px solid rgba(234,67,53,0.3)', color: '#ff6b6b', fontWeight: 800, fontSize: 15, padding: '14px 28px', borderRadius: 16, textDecoration: 'none', flex: '1 1 200px', justifyContent: 'center', transition: 'transform .2s' }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
                 onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
-                ♡️ {config.gmail}
+                ✉️ {config.gmail}
               </a>
             )}
           </div>
@@ -656,7 +799,35 @@ export default function CatalogoPublico() {
         </div>
         <p style={{ color: '#444466', fontSize: 13 }}>© 2026 · Hecho con ❤️ en {config.ciudad || 'Victoria, Tamaulipas'}</p>
       </footer>
-tion: 'all .2s',
+
+      {/* ── FLOATING WhatsApp button (single, always bottom-right) ── */}
+      <a href={`https://wa.me/${phone}?text=${encodeURIComponent('¡Hola Printoria! Me gustaría hacer un pedido 🖨️')}`}
+        target="_blank" rel="noreferrer"
+        style={{
+          position: 'fixed', bottom: 24, right: 24, zIndex: 200,
+          width: 60, height: 60, borderRadius: '50%',
+          background: 'linear-gradient(135deg, #25d366, #128c4e)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 4px 24px #25d36680',
+          animation: 'pulse-wa 2.5s ease infinite',
+        }}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      </a>
+
+      {/* ── CART BUTTON (bottom-left when active) ── */}
+      {cartCount > 0 && (
+        <button onClick={() => setCartOpen(true)}
+          style={{
+            position: 'fixed', bottom: 24, left: 24, zIndex: 190,
+            background: 'linear-gradient(135deg, #96d629, #5c891a)',
+            color: '#0a1200', fontWeight: 900, fontSize: 14,
+            padding: '14px 22px', borderRadius: 100,
+            border: 'none', cursor: 'pointer',
+            boxShadow: '0 4px 24px #96d62960',
+            display: 'flex', alignItems: 'center', gap: 8,
+            transition: 'all .2s',
           }}
           onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.04)'}
           onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
