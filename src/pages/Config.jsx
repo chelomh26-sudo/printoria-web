@@ -93,7 +93,7 @@ export default function Config() {
     'printoria_config', 'printoria_materials', 'printoria_products', 'printoria_multiProducts',
     'printoria_clients', 'printoria_sales', 'printoria_multiSales', 'printoria_wholesale',
     'printoria_quotes', 'printoria_personal', 'printoria_failures', 'printoria_proceso',
-    'printoria_gastos', 'printoria_cola', 'printoria_theme',
+    'printoria_gastos', 'printoria_cola', 'printoria_theme', 'printoria_addons', 'printoria_stock',
   ];
 
   function handleBackup() {
@@ -380,3 +380,4 @@ export default function Config() {
     </div>
   );
 }
+
