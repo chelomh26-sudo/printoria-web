@@ -83,6 +83,117 @@ const STATS = [
 ];
 
 /* ── Product card ────────────────────────────────────────── */
+/* ── YouTube embed helper ── */
+function getYoutubeEmbed(url) {
+  if (!url) return null;
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  return m ? `https://www.youtube.com/embed/${m[1]}?rel=0` : null;
+}
+
+/* ── Product detail modal ── */
+function ProductDetailModal({ product: p, onClose, waHref }) {
+  const embedUrl = getYoutubeEmbed(p.videoUrl);
+  return (
+    <div
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 400,
+        background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(10px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: 16,
+      }}>
+      <div style={{
+        background: '#0e0e1a',
+        border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: 24,
+        width: '100%', maxWidth: 760,
+        maxHeight: '92vh', overflowY: 'auto',
+        position: 'relative',
+      }}>
+        <button onClick={onClose}
+          style={{
+            position: 'sticky', top: 12, float: 'right', marginRight: 12, zIndex: 10,
+            background: 'rgba(255,255,255,0.12)', border: 'none', color: 'white',
+            width: 36, height: 36, borderRadius: '50%', cursor: 'pointer', fontSize: 18,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>✕</button>
+
+        {p.foto && (
+          <div style={{ borderRadius: '24px 24px 0 0', overflow: 'hidden', maxHeight: 360 }}>
+            <img src={p.foto} alt={p.nombre}
+              style={{ width: '100%', objectFit: 'cover', maxHeight: 360, display: 'block' }} />
+          </div>
+        )}
+
+        <div style={{ padding: '28px 28px 32px', clear: 'both' }}>
+          {(p.categorias || []).length > 0 && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
+              {p.categorias.map(c => (
+                <span key={c} style={{
+                  fontSize: 11, fontWeight: 700, padding: '3px 12px', borderRadius: 100,
+                  background: 'rgba(150,214,41,0.1)', color: '#96d629',
+                  border: '1px solid rgba(150,214,41,0.2)',
+                }}>{c}</span>
+              ))}
+            </div>
+          )}
+
+          <h2 style={{ fontSize: 'clamp(22px,4vw,30px)', fontWeight: 900, color: 'white', marginBottom: 14, lineHeight: 1.2 }}>
+            {p.nombre}
+          </h2>
+
+          {(p.descripcionPublica || p.descripcion) && (
+            <p style={{ fontSize: 15, color: '#9999bb', lineHeight: 1.75, marginBottom: 24, whiteSpace: 'pre-line' }}>
+              {p.descripcionPublica || p.descripcion}
+            </p>
+          )}
+
+          {embedUrl && (
+            <div style={{
+              marginBottom: 28, borderRadius: 16, overflow: 'hidden',
+              position: 'relative', paddingTop: '56.25%',
+              background: '#07070f',
+            }}>
+              <iframe
+                src={embedUrl}
+                title="Video del producto"
+                frameBorder="0"
+                allowFullScreen
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+              />
+            </div>
+          )}
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
+            <span style={{
+              fontSize: 'clamp(30px,5vw,40px)', fontWeight: 900,
+              background: 'linear-gradient(135deg, #96d629, #5c891a)',
+              backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            }}>{fmt(p.precioVenta)}</span>
+            <span style={{
+              fontSize: 12, fontWeight: 700, padding: '4px 12px', borderRadius: 100,
+              background: 'rgba(37,211,102,0.12)', color: '#25d366',
+              border: '1px solid rgba(37,211,102,0.25)',
+            }}>✓ Disponible</span>
+          </div>
+
+          <a href={waHref} target="_blank" rel="noreferrer"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+              background: 'linear-gradient(135deg, #25d366, #128c4e)',
+              color: 'white', fontWeight: 900, fontSize: 16,
+              padding: '16px 32px', borderRadius: 100, textDecoration: 'none',
+              boxShadow: '0 4px 20px rgba(37,211,102,0.3)',
+            }}>
+            💬 Pedir por WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ProductCard({ product: p, idx, onAdd, onWA, multi }) {
   const acc = CARD_ACCENTS[idx % CARD_ACCENTS.length];
   const [hovered, setHovered] = useState(false);
@@ -247,6 +358,7 @@ export default function CatalogoPublico() {
   const { products, multiProducts, config, galeriaFotos } = usePrintoria();
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [activeCat, setActiveCat] = useState('Todos');
   const [navScrolled, setNavScrolled] = useState(false);
 
@@ -546,7 +658,7 @@ export default function CatalogoPublico() {
               },
             ].map(f => (
               <div key={f.title}
-                style={{ background: '#0e0e1a', border: `1px solid ${f.color}25`, borderRadius: 20, padding: '32px 28px', transition: 'all .3s', position: 'relative', overflow: 'hidden' }}
+                onClick={onOpen} style={{ cursor: 'pointer', background: '#0e0e1a', border: `1px solid ${f.color}25`, borderRadius: 20, padding: '32px 28px', transition: 'all .3s', position: 'relative', overflow: 'hidden' }}
                 onMouseEnter={e => { e.currentTarget.style.border = `1px solid ${f.color}60`; e.currentTarget.style.boxShadow = `0 0 30px ${f.color}15`; }}
                 onMouseLeave={e => { e.currentTarget.style.border = `1px solid ${f.color}25`; e.currentTarget.style.boxShadow = 'none'; }}>
                 {/* Mascot contextual — bottom-right de cada card, PNG transparente */}
@@ -706,6 +818,80 @@ export default function CatalogoPublico() {
         </div>
       </section>
 
+      {/* ── B2B ── */}
+      <section style={{
+        padding: '80px 24px', position: 'relative', overflow: 'hidden',
+        background: 'linear-gradient(rgba(8,8,16,0.95), rgba(8,8,16,0.95))',
+      }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 52 }}>
+            <div style={{ display: 'inline-block', background: 'rgba(251,146,60,0.1)', border: '1px solid rgba(251,146,60,0.25)', borderRadius: 100, padding: '6px 16px', marginBottom: 16 }}>
+              <span style={{ fontSize: 11, fontWeight: 800, color: '#fb923c', letterSpacing: 3, textTransform: 'uppercase' }}>Para negocios</span>
+            </div>
+            <h2 style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 900, color: 'white', marginBottom: 14, lineHeight: 1.1 }}>
+              ¿Tu negocio puede crecer<br/>
+              <span style={{ background: 'linear-gradient(135deg, #fb923c, #f59e0b)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>con impresión 3D?</span>
+            </h2>
+            <p style={{ fontSize: 17, color: '#8888aa', maxWidth: 560, margin: '0 auto', lineHeight: 1.7 }}>
+              Si tienes un negocio, hay algo que podemos hacer juntos. Te ayudo a diferenciarte con piezas únicas que otros no tienen.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 18, marginBottom: 52 }}>
+            {[
+              { icon: '🎂', biz: 'Pastelerías', color: '#f472b6', items: ['Toppers con nombre', 'Moldes personalizados', 'Displays de pastel'] },
+              { icon: '🍽️', biz: 'Restaurantes', color: '#fb923c', items: ['Porta menús 3D', 'Dispensadores custom', 'Letreros de mesa'] },
+              { icon: '💅', biz: 'Salones & Spas', color: '#a78bfa', items: ['Organizadores de productos', 'Exhibidores', 'Decoración con tu logo'] },
+              { icon: '🏪', biz: 'Boutiques / Tiendas', color: '#22d3ee', items: ['Exhibidores de producto', 'Letreros 3D', 'Etiquetas personalizadas'] },
+              { icon: '🔧', biz: 'Talleres / Industria', color: '#96d629', items: ['Piezas de repuesto', 'Herramientas custom', 'Prototipos rápidos'] },
+              { icon: '🏆', biz: 'Clubes & Deportes', color: '#fbbf24', items: ['Trofeos personalizados', 'Llaveros del equipo', 'Accesorios de liga'] },
+            ].map(item => (
+              <div key={item.biz}
+                style={{
+                  background: '#0e0e1a',
+                  border: `1px solid ${item.color}20`,
+                  borderRadius: 20, padding: '24px 22px',
+                }}>
+                <div style={{ fontSize: 34, marginBottom: 12 }}>{item.icon}</div>
+                <h3 style={{ fontSize: 16, fontWeight: 900, color: 'white', marginBottom: 10 }}>{item.biz}</h3>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  {item.items.map(it => (
+                    <li key={it} style={{ fontSize: 13, color: '#7777aa', paddingLeft: 14, position: 'relative', marginBottom: 5 }}>
+                      <span style={{ position: 'absolute', left: 0, color: item.color, fontWeight: 900 }}>·</span>
+                      {it}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(251,146,60,0.08), rgba(245,158,11,0.06))',
+            border: '1px solid rgba(251,146,60,0.2)',
+            borderRadius: 24, padding: '40px 32px', textAlign: 'center',
+          }}>
+            <p style={{ fontSize: 22, fontWeight: 900, color: 'white', marginBottom: 10 }}>
+              ¿Tienes una idea para tu negocio?
+            </p>
+            <p style={{ color: '#8888aa', fontSize: 15, marginBottom: 28 }}>
+              Escríbeme y en menos de 24 horas te digo qué podemos hacer y a qué precio.
+            </p>
+            <a href={`https://wa.me/${(config.whatsapp || '8341112949').replace(/\D/g, '')}?text=${encodeURIComponent('¡Hola Printoria! 🖨️ Tengo un negocio y me interesa ver cómo la impresión 3D puede ayudarme. ¿Podemos hablar?')}`}
+              target="_blank" rel="noreferrer"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 10,
+                background: 'linear-gradient(135deg, #fb923c, #f59e0b)',
+                color: '#0a0a00', fontWeight: 900, fontSize: 16,
+                padding: '16px 36px', borderRadius: 100, textDecoration: 'none',
+                boxShadow: '0 6px 28px rgba(251,146,60,0.35)',
+              }}>
+              💬 Hablar sobre mi negocio
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* ── CTA IDEA ── */}
       <section style={{
         padding: '80px 24px', position: 'relative', overflow: 'hidden',
@@ -833,6 +1019,15 @@ export default function CatalogoPublico() {
           onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}>
           🛒 {cartCount} · {fmt(cartTotal)}
         </button>
+      )}
+
+      {/* ── PRODUCT DETAIL MODAL ── */}
+      {selectedProduct && (
+        <ProductDetailModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+          waHref={waLink(phone, `¡Hola Printoria! 🖨️ Me interesa el producto:\n\n*${selectedProduct.nombre}*\nPrecio: ${fmt(selectedProduct.precioVenta)}\n\n¿Está disponible? 😊`)}
+        />
       )}
 
       {/* ── CART MODAL ── */}
