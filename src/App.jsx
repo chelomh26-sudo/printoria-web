@@ -1,132 +1,92 @@
-import { useState, useEffect } from 'react';
-import { PrintoriaProvider } from './store/PrintoriaContext';
+import { useState } from 'react';
+import { FinanceProvider, useFinance } from './store/FinanceContext';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
-import Config from './pages/Config';
-import Materiales from './pages/Materiales';
-import Productos from './pages/Productos';
-import ProductosMulti from './pages/ProductosMulti';
-import Clientes from './pages/Clientes';
-import Ventas from './pages/Ventas';
-import VentasMulti from './pages/VentasMulti';
-import Mayoreo from './pages/Mayoreo';
-import Cotizaciones from './pages/Cotizaciones';
-import UsoPersonal from './pages/UsoPersonal';
-import Fallas from './pages/Fallas';
-import Proceso from './pages/Proceso';
-import CatalogoPublico from './pages/CatalogoPublico';
-import Finances from './pages/Finances';
-import ColaImpresion from './pages/ColaImpresion';
-import Stock from './pages/Stock';
-import GaleriaAdmin from './pages/GaleriaAdmin';
-import ChatPanel from './components/ChatPanel';
+import Transacciones from './pages/Transacciones';
+import Recurrentes from './pages/Recurrentes';
+import Cuentas from './pages/Cuentas';
+import Reportes from './pages/Reportes';
+import Categorias from './pages/Categorias';
+import Configuracion from './pages/Configuracion';
 
-const ADMIN_PASSWORD = 'Chelo@2696';
+const PAGES = {
+  dashboard:     Dashboard,
+  transacciones: Transacciones,
+  recurrentes:   Recurrentes,
+  cuentas:       Cuentas,
+  reportes:      Reportes,
+  categorias:    Categorias,
+  configuracion: Configuracion,
+};
 
-function AdminLogin({ onLogin }) {
-  const [pwd, setPwd] = useState('');
+const pinInp = 'w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-zinc-100 text-lg tracking-widest text-center focus:border-blue-500 focus:outline-none placeholder-zinc-600 transition-colors';
+
+function PinGate({ onUnlock }) {
+  const { config } = useFinance();
+  const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
 
-  function submit(e) {
-    e.preventDefault();
-    if (pwd === ADMIN_PASSWORD) { onLogin(); }
-    else { setError(true); setPwd(''); }
-  }
+  const check = () => {
+    if (pin === config.password) {
+      onUnlock();
+    } else {
+      setError(true);
+      setPin('');
+      setTimeout(() => setError(false), 1500);
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#e1e0e0' }}>
-      <form onSubmit={submit} className="bg-white rounded-2xl shadow-xl p-8 w-80 space-y-5">
-        <div className="text-center space-y-2">
-          <img src="/logo.png" alt="Printoria" className="h-14 mx-auto object-contain" />
-          <p className="text-zinc-400 text-sm">Panel de administración</p>
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-zinc-400 mb-1">Contraseña</label>
-          <input
-            type="password"
-            autoFocus
-            className="w-full bg-zinc-100 border border-zinc-300 rounded-lg px-4 py-2.5 text-zinc-800 text-sm focus:border-[#96d629] focus:outline-none"
-            placeholder="••••••••••"
-            value={pwd}
-            onChange={e => { setPwd(e.target.value); setError(false); }}
-          />
-          {error && <p className="text-red-500 text-xs mt-1">Contraseña incorrecta</p>}
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-[#96d629] hover:bg-[#7ab520] text-zinc-900 font-bold rounded-lg py-2.5 text-sm transition-colors"
-        >
-          Entrar
-        </button>
-      </form>
+    <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 w-full max-w-xs shadow-2xl text-center">
+        <div className="text-4xl mb-3">💰</div>
+        <h1 className="text-xl font-black text-zinc-100 mb-1">{config.nombre}</h1>
+        <p className="text-xs text-zinc-500 mb-6">Ingresa tu PIN para continuar</p>
+        <input
+          type="password"
+          value={pin}
+          onChange={e => { setPin(e.target.value); setError(false); }}
+          onKeyDown={e => e.key === 'Enter' && check()}
+          placeholder="••••"
+          maxLength={20}
+          className={`${pinInp} ${error ? 'border-red-500' : ''} mb-3`}
+          autoFocus
+        />
+        {error && <p className="text-xs text-red-400 mb-3">PIN incorrecto</p>}
+        <button onClick={check} className="btn-brand w-full">Entrar</button>
+      </div>
     </div>
   );
 }
 
-const PAGES = {
-  dashboard: Dashboard,
-  config: Config,
-  materiales: Materiales,
-  productos: Productos,
-  productosMulti: ProductosMulti,
-  clientes: Clientes,
-  ventas: Ventas,
-  ventasMulti: VentasMulti,
-  mayoreo: Mayoreo,
-  cotizaciones: Cotizaciones,
-  personal: UsoPersonal,
-  fallas: Fallas,
-  proceso: Proceso,
-  cola: ColaImpresion,
-  stock: Stock,
-  galeria: GaleriaAdmin,
-  catalogo: CatalogoPublico,
-  finances: Finances,
-};
-
 function AppContent() {
   const [current, setCurrent] = useState('dashboard');
   const [collapsed, setCollapsed] = useState(false);
-  const [hash, setHash] = useState(window.location.hash);
-  const [adminUnlocked, setAdminUnlocked] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);
+
+  if (!unlocked) return <PinGate onUnlock={() => setUnlocked(true)} />;
+
   const Page = PAGES[current] || Dashboard;
 
-  // Escucha cambios de hash para routing reactivo
-  useEffect(() => {
-    const onHash = () => setHash(window.location.hash);
-    window.addEventListener('hashchange', onHash);
-    return () => window.removeEventListener('hashchange', onHash);
-  }, []);
-
-  // Modo catálogo público: URL con #catalogo → sin sidebar, solo vitrina
-  if (hash === '#catalogo') {
-    return (
-      <div className="min-h-screen bg-zinc-950 text-zinc-100">
-        <CatalogoPublico />
-      </div>
-    );
-  }
-
-  // Login gate para el panel admin
-  if (!adminUnlocked) {
-    return <AdminLogin onLogin={() => setAdminUnlocked(true)} />;
-  }
-
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: '#e1e0e0' }}>
-      <Sidebar current={current} setCurrent={setCurrent} collapsed={collapsed} setCollapsed={setCollapsed} />
-      <main className="flex-1 overflow-auto" style={{ background: '#e1e0e0' }}>
+    <div className="flex h-screen overflow-hidden bg-zinc-950">
+      <Sidebar
+        current={current}
+        setCurrent={setCurrent}
+        collapsed={collapsed}
+        setCollapsed={setCollapsed}
+      />
+      <main className="flex-1 overflow-auto bg-zinc-950">
         <Page navigate={setCurrent} />
       </main>
-      <ChatPanel />
     </div>
   );
 }
 
 export default function App() {
   return (
-    <PrintoriaProvider>
+    <FinanceProvider>
       <AppContent />
-    </PrintoriaProvider>
+    </FinanceProvider>
   );
 }
