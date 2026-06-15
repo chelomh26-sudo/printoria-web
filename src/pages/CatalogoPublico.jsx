@@ -864,80 +864,57 @@ export default function CatalogoPublico() {
       </section>
 
       {/* ── B2B ── */}
-      <section style={{
-        padding: '80px 24px', position: 'relative', overflow: 'hidden',
-        background: 'linear-gradient(rgba(8,8,16,0.95), rgba(8,8,16,0.95))',
-      }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 52 }}>
-            <div style={{ display: 'inline-block', background: 'rgba(251,146,60,0.1)', border: '1px solid rgba(251,146,60,0.25)', borderRadius: 100, padding: '6px 16px', marginBottom: 16 }}>
-              <span style={{ fontSize: 11, fontWeight: 800, color: '#fb923c', letterSpacing: 3, textTransform: 'uppercase' }}>Para negocios</span>
+          <div style={{ marginTop: 64, padding: '48px 0' }}>
+            <div style={{ textAlign: 'center', marginBottom: 40 }}>
+              <span style={{ background: 'linear-gradient(135deg,#a78bfa,#7c3aed)', color: 'white', fontWeight: 800, fontSize: 11, padding: '4px 14px', borderRadius: 100, letterSpacing: 2, textTransform: 'uppercase' }}>Para negocios</span>
+              <h2 style={{ color: 'white', fontSize: 28, fontWeight: 900, margin: '14px 0 8px' }}>Tienes un negocio?</h2>
+              <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, maxWidth: 480, margin: '0 auto' }}>
+                Fabricamos piezas unicas para tu marca. Sin minimos absurdos, sin esperas de semanas.
+              </p>
             </div>
-            <h2 style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 900, color: 'white', marginBottom: 14, lineHeight: 1.1 }}>
-              ¿Tu negocio puede crecer<br/>
-              <span style={{ background: 'linear-gradient(135deg, #fb923c, #f59e0b)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>con impresión 3D?</span>
-            </h2>
-            <p style={{ fontSize: 17, color: '#8888aa', maxWidth: 560, margin: '0 auto', lineHeight: 1.7 }}>
-              Si tienes un negocio, hay algo que podemos hacer juntos. Te ayudo a diferenciarte con piezas únicas que otros no tienen.
-            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(260px,100%),1fr))', gap: 16 }}>
+              {[
+                { icon: '🎂', title: 'Pastelerias', products: 'Toppers personalizados, moldes de fondant, cortadores custom', price: '$80 - $400', tag: 'Alta recurrencia', color: '#f472b6' },
+                { icon: '💍', title: 'Joyerias', products: 'Exhibidores de aretes/anillos, prototipos de diseno antes de fundir', price: '$200 - $800', tag: 'Alto margen', color: '#fbbf24' },
+                { icon: '🎉', title: 'Agencias de eventos', products: 'Letreros Welcome, marcos de foto, centros de mesa con nombres', price: '$100 - $400', tag: 'Cada evento', color: '#a78bfa' },
+                { icon: '🍽', title: 'Restaurantes', products: 'Numeros de mesa, porta menus, salseros y organizadores con logo', price: '$60 - $300', tag: 'Al renovar', color: '#34d399' },
+                { icon: '💇', title: 'Salones & Spas', products: 'Organiz. de brochas, porta esmaltes, letrero del negocio instagrameable', price: '$80 - $250', tag: 'Branding local', color: '#f87171' },
+                { icon: '🏫', title: 'Escuelas & Institutos', products: 'Trofeos, medallas, placas de reconocimiento personalizadas', price: '$80 - $300', tag: 'Fin de cursos', color: '#60a5fa' },
+                { icon: '👗', title: 'Boutiques & Tiendas', products: 'Exhibidores de accesorios, porta etiquetas, maniquies de manos', price: '$200 - $700', tag: 'Imagen premium', color: '#fb923c' },
+                { icon: '🏋', title: 'Gimnasios', products: 'Logos 3D para pared, placas de equipo, branding de instalacion', price: '$150 - $500', tag: 'Al inaugurar', color: '#4ade80' },
+                { icon: '🔧', title: 'Talleres & Ferreteros', products: 'Piezas de repuesto, adaptadores y guias de corte descontinuadas', price: '$150 - $800', tag: 'Muy recurrente', color: '#94a3b8' },
+              ].map(f => (
+                <div key={f.title} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '20px 20px 18px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ fontSize: 26 }}>{f.icon}</span>
+                    <span style={{ color: 'white', fontWeight: 700, fontSize: 15 }}>{f.title}</span>
+                  </div>
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, lineHeight: 1.5, margin: 0 }}>{f.products}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
+                    <span style={{ color: f.color, fontWeight: 800, fontSize: 14 }}>{f.price}</span>
+                    <span style={{ background: f.color + '22', color: f.color, fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 100 }}>{f.tag}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginTop: 32, background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.2)', borderRadius: 16, padding: '18px 24px', display: 'flex', alignItems: 'center', gap: 14 }}>
+              <span style={{ fontSize: 28, flexShrink: 0 }}>💡</span>
+              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>
+                <strong style={{ color: 'white' }}>Tip:</strong> Las pastelerias y agencias de eventos pueden convertirse en clientes fijos. Un solo evento de boda genera 30-60 piezas. Ofrecemos precio por volumen.
+              </p>
+            </div>
+
+            <div style={{ textAlign: 'center', marginTop: 32 }}>
+              <a href={waLink(phone, 'Hola Printoria! Me interesa un presupuesto para mi negocio.')} target="_blank" rel="noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: 'linear-gradient(135deg,#25d366,#128c7e)', color: 'white', fontWeight: 800, fontSize: 15, padding: '14px 32px', borderRadius: 100, textDecoration: 'none' }}>
+                <span style={{ fontSize: 20 }}>💬</span> Pide cotizacion para tu negocio
+              </a>
+            </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 18, marginBottom: 52 }}>
-            {[
-              { icon: '🎂', biz: 'Pastelerías', color: '#f472b6', items: ['Toppers con nombre', 'Moldes personalizados', 'Displays de pastel'] },
-              { icon: '🍽️', biz: 'Restaurantes', color: '#fb923c', items: ['Porta menús 3D', 'Dispensadores custom', 'Letreros de mesa'] },
-              { icon: '💅', biz: 'Salones & Spas', color: '#a78bfa', items: ['Organizadores de productos', 'Exhibidores', 'Decoración con tu logo'] },
-              { icon: '🏪', biz: 'Boutiques / Tiendas', color: '#22d3ee', items: ['Exhibidores de producto', 'Letreros 3D', 'Etiquetas personalizadas'] },
-              { icon: '🔧', biz: 'Talleres / Industria', color: '#96d629', items: ['Piezas de repuesto', 'Herramientas custom', 'Prototipos rápidos'] },
-              { icon: '🏆', biz: 'Clubes & Deportes', color: '#fbbf24', items: ['Trofeos personalizados', 'Llaveros del equipo', 'Accesorios de liga'] },
-            ].map(item => (
-              <div key={item.biz}
-                style={{
-                  background: '#0e0e1a',
-                  border: `1px solid ${item.color}20`,
-                  borderRadius: 20, padding: '24px 22px',
-                }}>
-                <div style={{ fontSize: 34, marginBottom: 12 }}>{item.icon}</div>
-                <h3 style={{ fontSize: 16, fontWeight: 900, color: 'white', marginBottom: 10 }}>{item.biz}</h3>
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                  {item.items.map(it => (
-                    <li key={it} style={{ fontSize: 13, color: '#7777aa', paddingLeft: 14, position: 'relative', marginBottom: 5 }}>
-                      <span style={{ position: 'absolute', left: 0, color: item.color, fontWeight: 900 }}>·</span>
-                      {it}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(251,146,60,0.08), rgba(245,158,11,0.06))',
-            border: '1px solid rgba(251,146,60,0.2)',
-            borderRadius: 24, padding: '40px 32px', textAlign: 'center',
-          }}>
-            <p style={{ fontSize: 22, fontWeight: 900, color: 'white', marginBottom: 10 }}>
-              ¿Tienes una idea para tu negocio?
-            </p>
-            <p style={{ color: '#8888aa', fontSize: 15, marginBottom: 28 }}>
-              Escríbeme y en menos de 24 horas te digo qué podemos hacer y a qué precio.
-            </p>
-            <a href={`https://wa.me/${(config.whatsapp || '8341112949').replace(/\D/g, '')}?text=${encodeURIComponent('¡Hola Printoria! 🖨️ Tengo un negocio y me interesa ver cómo la impresión 3D puede ayudarme. ¿Podemos hablar?')}`}
-              target="_blank" rel="noreferrer"
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 10,
-                background: 'linear-gradient(135deg, #fb923c, #f59e0b)',
-                color: '#0a0a00', fontWeight: 900, fontSize: 16,
-                padding: '16px 36px', borderRadius: 100, textDecoration: 'none',
-                boxShadow: '0 6px 28px rgba(251,146,60,0.35)',
-              }}>
-              💬 Hablar sobre mi negocio
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ── CTA IDEA ── */}
+          {/* ── CTA IDEA ── */}
       <section style={{
         padding: '80px 24px', position: 'relative', overflow: 'hidden',
         backgroundImage: 'linear-gradient(rgba(8,8,16,0.82), rgba(8,8,16,0.86)), url(/impresora3.png)',
