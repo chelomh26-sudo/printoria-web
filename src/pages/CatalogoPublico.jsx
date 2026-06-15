@@ -876,14 +876,18 @@ export default function CatalogoPublico() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(260px,100%),1fr))', gap: 16 }}>
               {[
                 { icon: '🎂', title: 'Pastelerias', products: 'Toppers personalizados, moldes de fondant, cortadores custom', price: '$80 - $400', tag: 'Alta recurrencia', color: '#f472b6' },
-                { icon: '💍', title: 'Joyerias', products: 'Exhibidores de aretes/anillos, prototipos de diseno antes de fundir', price: '$200 - $800', tag: 'Alto margen', color: '#fbbf24' },
-                { icon: '🎉', title: 'Agencias de eventos', products: 'Letreros Welcome, marcos de foto, centros de mesa con nombres', price: '$100 - $400', tag: 'Cada evento', color: '#a78bfa' },
+                { icon: '💍', title: 'Joyerias', products: 'Exhibidores de aretes y anillos, prototipos antes de fundir en metal', price: '$200 - $800', tag: 'Alto margen', color: '#fbbf24' },
+                { icon: '🎉', title: 'Agencias de eventos', products: 'Letreros Welcome, marcos de foto, centros de mesa con nombres', price: '$100 - $500', tag: 'Cada evento', color: '#a78bfa' },
+                { icon: '📍', title: 'Bodas & Quinces', products: 'Souvenirs, iniciales 3D, coronas, letras luminosas, detalles custom', price: '$100 - $600', tag: 'Temporada alta', color: '#e879f9' },
                 { icon: '🍽', title: 'Restaurantes', products: 'Numeros de mesa, porta menus, salseros y organizadores con logo', price: '$60 - $300', tag: 'Al renovar', color: '#34d399' },
-                { icon: '💇', title: 'Salones & Spas', products: 'Organiz. de brochas, porta esmaltes, letrero del negocio instagrameable', price: '$80 - $250', tag: 'Branding local', color: '#f87171' },
+                { icon: '💇', title: 'Salones & Spas', products: 'Organiz. de brochas, porta esmaltes, letrero instagrameable', price: '$80 - $250', tag: 'Branding local', color: '#f87171' },
                 { icon: '🏫', title: 'Escuelas & Institutos', products: 'Trofeos, medallas, placas de reconocimiento personalizadas', price: '$80 - $300', tag: 'Fin de cursos', color: '#60a5fa' },
                 { icon: '👗', title: 'Boutiques & Tiendas', products: 'Exhibidores de accesorios, porta etiquetas, maniquies de manos', price: '$200 - $700', tag: 'Imagen premium', color: '#fb923c' },
                 { icon: '🏋', title: 'Gimnasios', products: 'Logos 3D para pared, placas de equipo, branding de instalacion', price: '$150 - $500', tag: 'Al inaugurar', color: '#4ade80' },
                 { icon: '🔧', title: 'Talleres & Ferreteros', products: 'Piezas de repuesto, adaptadores y guias de corte descontinuadas', price: '$150 - $800', tag: 'Muy recurrente', color: '#94a3b8' },
+                { icon: '🐾', title: 'Tiendas de mascotas', products: 'Comederos custom, placas de identificacion, accesorios personalizados', price: '$60 - $300', tag: 'Tendencia', color: '#f9a8d4' },
+                { icon: '📸', title: 'Fotografos & Estudios', products: 'Props para sesiones, letras para fotos, marcos decorativos', price: '$80 - $350', tag: 'Por sesion', color: '#c084fc' },
+                { icon: '🏥', title: 'Clinicas & Consultorios', products: 'Organizadores de escritorio, senaletica, porta tarjetas corporativo', price: '$150 - $500', tag: 'Equipamiento', color: '#38bdf8' },
               ].map(f => (
                 <div key={f.title} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '20px 20px 18px', display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
