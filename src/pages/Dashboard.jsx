@@ -82,6 +82,80 @@ function Pill({ label }) {
     </span>
   );
 }
+/* — Mantenimiento Widget — */
+function MantenimientoWidget() {
+  const TAREAS = [
+    { id: 'bambu_rielY',    maq: 'Bambu A1', parte: 'Riel Y',           tipo: 'Aceite',  diasMax: 90 },
+    { id: 'bambu_rielX',    maq: 'Bambu A1', parte: 'Riel X',           tipo: 'Aceite',  diasMax: 90 },
+    { id: 'bambu_tornZ',    maq: 'Bambu A1', parte: 'Tornillo Z',       tipo: 'Grasa',   diasMax: 90 },
+    { id: 'bambu_poleas',   maq: 'Bambu A1', parte: 'Poleas/Correas',   tipo: 'Revisar', diasMax: 90 },
+    { id: 'bambu_limpieza', maq: 'Bambu A1', parte: 'Limpieza general', tipo: 'Limpiar', diasMax: 30 },
+    { id: 'ender_rieles',   maq: 'Ender 3',  parte: 'Rieles X/Y',      tipo: 'Aceite',  diasMax: 60 },
+    { id: 'ender_tornZ',    maq: 'Ender 3',  parte: 'Tornillo Z',       tipo: 'Grasa',   diasMax: 60 },
+    { id: 'ender_limpieza', maq: 'Ender 3',  parte: 'Limpieza general', tipo: 'Limpiar', diasMax: 30 },
+    { id: 'ender_correas',  maq: 'Ender 3',  parte: 'Tension correas',  tipo: 'Revisar', diasMax: 30 },
+  ];
+  const [open, setOpen] = useState(false);
+  const [fechas, setFechas] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('mant_fechas') || '{}'); } catch { return {}; }
+  });
+  const hoy = new Date();
+  function diasDesde(id) {
+    if (!fechas[id]) return null;
+    return Math.floor((hoy - new Date(fechas[id])) / 86400000);
+  }
+  function marcarHecho(id) {
+    const n = { ...fechas, [id]: hoy.toISOString() };
+    setFechas(n);
+    localStorage.setItem('mant_fechas', JSON.stringify(n));
+  }
+  const items = TAREAS.map(t => {
+    const d = diasDesde(t.id);
+    const estado = d === null ? 'nuevo' : d >= t.diasMax ? 'vencido' : d >= t.diasMax - 7 ? 'pronto' : 'ok';
+    return { ...t, d, estado };
+  });
+  const pendientes = items.filter(i => i.estado !== 'ok').length;
+  const colEstado = { vencido: '#ef4444', pronto: '#eab308', nuevo: '#a78bfa', ok: '#22c55e' };
+  return (
+    <div style={{ position: 'fixed', bottom: 24, right: 88, zIndex: 50 }}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold shadow-lg"
+        style={{ background: pendientes > 0 ? '#ef4444' : '#22c55e', color: 'white' }}
+      >
+        Mant. {pendientes > 0 && <span className="bg-white rounded-full px-1.5" style={{ color: '#ef4444' }}>{pendientes}</span>}
+      </button>
+      {open && (
+        <div style={{ width: 300, background: '#1a1a2e', border: '1px solid rgba(255,255,255,0.1)', maxHeight: 440, overflowY: 'auto', position: 'absolute', bottom: '110%', right: 0, borderRadius: 16, boxShadow: '0 20px 60px rgba(0,0,0,0.6)' }}>
+          <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <span className="font-bold text-sm text-white">Mantenimiento Impresoras</span>
+            <button onClick={() => setOpen(false)} className="text-zinc-400 text-xs hover:text-white">x</button>
+          </div>
+          <div className="p-3 space-y-2">
+            {items.map(item => (
+              <div key={item.id} style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${item.estado === 'vencido' ? 'rgba(239,68,68,0.5)' : item.estado === 'pronto' ? 'rgba(234,179,8,0.4)' : 'rgba(255,255,255,0.06)'}`, borderRadius: 12, padding: '10px 12px' }}>
+                <div className="flex items-start gap-2 justify-between">
+                  <div className="flex-1">
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>{item.maq}</p>
+                    <p className="text-sm font-semibold text-white">{item.parte} <span className="text-xs font-normal" style={{ color: 'rgba(255,255,255,0.35)' }}>({item.tipo})</span></p>
+                    <p className="text-xs mt-0.5" style={{ color: colEstado[item.estado] }}>
+                      {item.d === null ? 'Sin registro' : item.estado === 'vencido' ? `Vencido (${item.d}d / ${item.diasMax}d)` : `${item.d}d / ${item.diasMax}d`}
+                    </p>
+                  </div>
+                  <button onClick={() => marcarHecho(item.id)} className="text-xs rounded-lg px-2 py-1 shrink-0 font-medium" style={{ background: 'rgba(150,214,41,0.15)', color: '#96d629', border: '1px solid rgba(150,214,41,0.3)' }}>Hecho</button>
+                </div>
+                <div className="mt-2 rounded-full overflow-hidden" style={{ height: 3, background: 'rgba(255,255,255,0.08)' }}>
+                  <div style={{ width: `${item.d === null ? 100 : Math.min(100, Math.round((item.d / item.diasMax) * 100))}%`, height: '100%', background: colEstado[item.estado], borderRadius: 9999, transition: 'width 0.3s' }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 export default function Dashboard({ navigate }) {
   const {
@@ -384,6 +458,7 @@ export default function Dashboard({ navigate }) {
         </div>
       )}
 
-    </div>
+          <MantenimientoWidget />
+          </div>
   );
 }
