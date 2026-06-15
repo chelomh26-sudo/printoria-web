@@ -875,19 +875,19 @@ export default function CatalogoPublico() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(260px,100%),1fr))', gap: 16 }}>
               {[
-                { icon: '🎂', title: 'Pastelerias', products: 'Toppers con nombre y fecha, cortadores de galleta custom, letras para fondant, figuras de personajes, displays de mesa de dulces', price: '$80 - $400', tag: '~4 pedidos/mes', color: '#f472b6' },
-                { icon: '💍', title: 'Joyerias', products: 'Mandriles de anillo, exhibidores de mano y oreja, prototipos antes de fundir en plata u oro, cajas de presentacion, soportes de collar', price: '$200 - $800', tag: 'Prototipo = ahorro', color: '#fbbf24' },
-                { icon: '🎉', title: 'Agencias de eventos', products: 'Letras gigantes para photocall, marcos de photobooth, portanumeros de mesa, letreros de bienvenida, accesorios para photocall tematico', price: '$100 - $500', tag: '50+ pzs/evento', color: '#a78bfa' },
-                { icon: '📍', title: 'Bodas & Quinces', products: 'Figuras de novios para pastel, porta alianzas, corona de quince, cajitas de recuerdo, varitas para el vals, marcos con fecha', price: '$100 - $600', tag: '100+ recuerdos', color: '#e879f9' },
-                { icon: '🍽', title: 'Restaurantes', products: 'Portamenus con logo, numeros de mesa, porta condimentos y salseros, letrero de entrada, decoracion de barra tematica', price: '$60 - $300', tag: 'Mesa completa', color: '#34d399' },
-                { icon: '💇', title: 'Salones & Spas', products: 'Organizador de brochas y maquillaje, porta esmaltes para 60+ colores, letrero instagrameable del local, soporte de secadora, dispensador de productos', price: '$80 - $250', tag: 'Unico en tu zona', color: '#f87171' },
-                { icon: '🏫', title: 'Escuelas & Institutos', products: 'Trofeos para torneos internos, medallas de graduacion, placas de reconocimiento, portanombres para maestros, juegos de letras para salones', price: '$80 - $300', tag: 'Cada Jun y Dic', color: '#60a5fa' },
-                { icon: '👗', title: 'Boutiques & Tiendas', products: 'Exhibidor de aretes en mano o busto, porta lentes de sol, colgadores especiales para ropa, letras 3D para vitrina, soportes de bolsos', price: '$200 - $700', tag: '4x al ano', color: '#fb923c' },
-                { icon: '🏋', title: 'Gimnasios', products: 'Logo 3D para pared de entrada, senaletica de zonas (cardio, pesas, funcional), porta tarjetas de membresia, trofeos para retos internos', price: '$150 - $500', tag: '1 pedido grande', color: '#4ade80' },
-                { icon: '🔧', title: 'Talleres & Ferreteros', products: 'Refacciones descontinuadas sin fabricante, guias de corte y plantillas, adaptadores entre herramientas, tapas y cubiertas de proteccion', price: '$150 - $800', tag: 'Pieza x pieza', color: '#94a3b8' },
-                { icon: '🐾', title: 'Tiendas de mascotas', products: 'Comederos con nombre del perro, placas de identificacion con datos del dueno, juguetes de enriquecimiento, soportes para bolsas de croquetas', price: '$60 - $300', tag: 'Mercado en alza', color: '#f9a8d4' },
-                { icon: '📸', title: 'Fotografos & Estudios', products: 'Props imposibles de comprar (bigotes, coronas, letreros custom), stands para flat lay de productos, fondos 3D para sesiones de marca', price: '$80 - $350', tag: 'Props exclusivos', color: '#c084fc' },
-                { icon: '🏥', title: 'Clinicas & Consultorios', products: 'Modelos anatomicos de huesos, columna, pelvis y rodilla para explicar procedimientos; replicas de corazon y cerebro para educacion medica; modelos dentales; senaletica de areas', price: '$150 - $600', tag: 'Sin catalogo', color: '#38bdf8' },
+                { icon: '🎂', title: 'Pastelerias', products: 'Toppers con nombre y fecha, cortadores de galleta custom, letras para fondant, figuras de personajes, displays de mesa de dulces', price: '$80 - $400', color: '#f472b6' },
+                { icon: '💍', title: 'Joyerias', products: 'Mandriles de anillo, exhibidores de mano y oreja, prototipos antes de fundir en plata u oro, cajas de presentacion, soportes de collar', price: '$200 - $800', color: '#fbbf24' },
+                { icon: '🎉', title: 'Agencias de eventos', products: 'Letras gigantes para photocall, marcos de photobooth, portanumeros de mesa, letreros de bienvenida, accesorios para photocall tematico', price: '$100 - $500', color: '#a78bfa' },
+                { icon: '📍', title: 'Bodas & Quinces', products: 'Figuras de novios para pastel, porta alianzas, corona de quince, cajitas de recuerdo, varitas para el vals, marcos con fecha', price: '$100 - $600', color: '#e879f9' },
+                { icon: '🍽', title: 'Restaurantes', products: 'Portamenus con logo, numeros de mesa, porta condimentos y salseros, letrero de entrada, decoracion de barra tematica', price: '$60 - $300', color: '#34d399' },
+                { icon: '💇', title: 'Salones & Spas', products: 'Organizador de brochas y maquillaje, porta esmaltes para 60+ colores, letrero instagrameable del local, soporte de secadora, dispensador de productos', price: '$80 - $250', color: '#f87171' },
+                { icon: '🏫', title: 'Escuelas & Institutos', products: 'Trofeos para torneos internos, medallas de graduacion, placas de reconocimiento, portanombres para maestros, juegos de letras para salones', price: '$80 - $300', color: '#60a5fa' },
+                { icon: '👗', title: 'Boutiques & Tiendas', products: 'Exhibidor de aretes en mano o busto, porta lentes de sol, colgadores especiales, letras 3D para vitrina, soportes de bolsos', price: '$200 - $700', color: '#fb923c' },
+                { icon: '🏋', title: 'Gimnasios', products: 'Logo 3D para pared de entrada, senaletica de zonas (cardio, pesas, funcional), porta tarjetas de membresia, trofeos para retos internos', price: '$150 - $500', color: '#4ade80' },
+                { icon: '🔧', title: 'Talleres & Ferreteros', products: 'Refacciones descontinuadas sin fabricante, guias de corte y plantillas, adaptadores entre herramientas, tapas y cubiertas de proteccion', price: '$150 - $800', color: '#94a3b8' },
+                { icon: '🐾', title: 'Tiendas de mascotas', products: 'Comederos con nombre del perro, placas de identificacion con datos del dueno, juguetes de enriquecimiento, soportes para bolsas de croquetas', price: '$60 - $300', color: '#f9a8d4' },
+                { icon: '📸', title: 'Fotografos & Estudios', products: 'Props imposibles de comprar (bigotes, coronas, letreros custom), stands para flat lay de productos, fondos 3D para sesiones de marca', price: '$80 - $350', color: '#c084fc' },
+                { icon: '🏥', title: 'Clinicas & Consultorios', products: 'Modelos anatomicos de huesos, columna, pelvis y rodilla para explicar procedimientos; replicas de corazon y cerebro para educacion medica; modelos dentales; senaletica de areas', price: '$150 - $600', color: '#38bdf8' },
               ].map(f => (
                 <div key={f.title} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '20px 20px 18px', display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -895,10 +895,7 @@ export default function CatalogoPublico() {
                     <span style={{ color: 'white', fontWeight: 700, fontSize: 15 }}>{f.title}</span>
                   </div>
                   <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, lineHeight: 1.5, margin: 0 }}>{f.products}</p>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 4 }}>
-                    <span style={{ color: f.color, fontWeight: 800, fontSize: 14 }}>{f.price}</span>
-                    <span style={{ background: f.color + '22', color: f.color, fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 100 }}>{f.tag}</span>
-                  </div>
+                  <span style={{ color: f.color, fontWeight: 800, fontSize: 14, marginTop: 4 }}>{f.price}</span>
                 </div>
               ))}
             </div>
