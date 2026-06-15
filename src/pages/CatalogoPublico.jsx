@@ -897,16 +897,11 @@ export default function CatalogoPublico() {
                     <span style={{ fontSize: 26 }}>{f.icon}</span>
                     <span style={{ color: 'white', fontWeight: 700, fontSize: 15 }}>{f.title}</span>
                   </div>
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, lineHeight: 1.5, margin: 0 }}>{f.products}</p>
                 </div>
               ))}
             </div>
 
-            <div style={{ marginTop: 32, background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.2)', borderRadius: 16, padding: '18px 24px', display: 'flex', alignItems: 'center', gap: 14 }}>
-              <span style={{ fontSize: 28, flexShrink: 0 }}>💡</span>
-              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-                <strong style={{ color: 'white' }}>Tip:</strong> Las pastelerias y agencias de eventos pueden convertirse en clientes fijos. Un solo evento de boda genera 30-60 piezas. Ofrecemos precio por volumen.
-              </p>
-            </div>
 
             <div style={{ textAlign: 'center', marginTop: 32 }}>
               <a href={waLink(phone, 'Hola Printoria! Me interesa un presupuesto para mi negocio.')} target="_blank" rel="noreferrer"
