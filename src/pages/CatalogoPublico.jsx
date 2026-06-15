@@ -895,7 +895,6 @@ export default function CatalogoPublico() {
                     <span style={{ color: 'white', fontWeight: 700, fontSize: 15 }}>{f.title}</span>
                   </div>
                   <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, lineHeight: 1.5, margin: 0 }}>{f.products}</p>
-                  <span style={{ color: f.color, fontWeight: 800, fontSize: 14, marginTop: 4 }}>{f.price}</span>
                 </div>
               ))}
             </div>
