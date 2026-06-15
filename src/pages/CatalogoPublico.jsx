@@ -872,6 +872,9 @@ export default function CatalogoPublico() {
                 Fabricamos piezas unicas para tu marca. Sin minimos absurdos, sin esperas de semanas.
               </p>
             </div>
+            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, textAlign: 'center', maxWidth: 560, margin: '0 auto 24px' }}>
+                Llaveros, artículos con el logo de tu empresa, productos personalizados y piezas 100% únicas — lo fabricamos todo.
+                </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(260px,100%),1fr))', gap: 16 }}>
               {[
@@ -894,7 +897,6 @@ export default function CatalogoPublico() {
                     <span style={{ fontSize: 26 }}>{f.icon}</span>
                     <span style={{ color: 'white', fontWeight: 700, fontSize: 15 }}>{f.title}</span>
                   </div>
-                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, lineHeight: 1.5, margin: 0 }}>{f.products}</p>
                 </div>
               ))}
             </div>
