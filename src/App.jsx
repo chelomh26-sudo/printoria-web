@@ -88,7 +88,10 @@ function AppContent() {
   const [current, setCurrent] = useState('dashboard');
   const [collapsed, setCollapsed] = useState(false);
   const [hash, setHash] = useState(window.location.hash);
-  const [adminUnlocked, setAdminUnlocked] = useState(false);
+  // Auto-login con ?aikey=printoria3d (para proyectos de IA / Claude)
+  const AI_KEY = 'printoria3d';
+  const hasAiKey = new URLSearchParams(window.location.search).get('aikey') === AI_KEY;
+  const [adminUnlocked, setAdminUnlocked] = useState(hasAiKey);
   const Page = PAGES[current] || Dashboard;
 
   // Escucha cambios de hash para routing reactivo
