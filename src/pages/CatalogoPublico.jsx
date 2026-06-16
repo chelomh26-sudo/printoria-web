@@ -596,12 +596,12 @@ export default function CatalogoPublico() {
 
           {/* Teaser negocios */}
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
-            <a href="#negocios" style={{
+            <a href="#catalogo" onClick={e => { e.preventDefault(); document.getElementById('negocios')?.scrollIntoView({ behavior: 'smooth' }); }} style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               background: 'rgba(251,146,60,0.1)', border: '1px solid rgba(251,146,60,0.3)',
               color: '#fb923c', fontWeight: 700, fontSize: 13,
               padding: '8px 20px', borderRadius: 100, textDecoration: 'none',
-              transition: 'all .2s',
+              transition: 'all .2s', cursor: 'pointer',
             }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(251,146,60,0.18)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(251,146,60,0.1)'; }}>
