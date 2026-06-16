@@ -899,15 +899,37 @@ export default function CatalogoPublico() {
             </p>
           </div>
 
+          {/* Universales — lo que cualquier negocio puede pedir */}
+          <div style={{
+            background: 'rgba(251,146,60,0.06)', border: '1px solid rgba(251,146,60,0.2)',
+            borderRadius: 16, padding: '20px 28px', marginBottom: 36,
+            display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12,
+          }}>
+            <span style={{ fontSize: 14, fontWeight: 800, color: '#fb923c', whiteSpace: 'nowrap' }}>Para cualquier negocio:</span>
+            {['🔑 Llaveros con logo', '🪧 Letreros 3D', '💡 Letras luminosas', '🏷️ Placas de nombre', '📦 Exhibidores', '🎁 Regalos corporativos', '🖼️ Logos en 3D', '📋 Señalética'].map(item => (
+              <span key={item} style={{
+                background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(251,146,60,0.15)',
+                borderRadius: 100, padding: '5px 14px', fontSize: 12, color: '#ccccdd', fontWeight: 600,
+              }}>{item}</span>
+            ))}
+          </div>
+
           {/* Grid de casos */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 18, marginBottom: 52 }}>
             {[
               { icon: '🎂', biz: 'Pastelerías', color: '#f472b6', items: ['Toppers con nombre', 'Moldes personalizados', 'Displays de pastel'] },
               { icon: '🍽️', biz: 'Restaurantes', color: '#fb923c', items: ['Porta menús 3D', 'Dispensadores custom', 'Letreros de mesa'] },
-              { icon: '💅', biz: 'Salones & Spas', color: '#a78bfa', items: ['Organizadores de productos', 'Exhibidores', 'Decoración con tu logo'] },
-              { icon: '🏪', biz: 'Boutiques / Tiendas', color: '#22d3ee', items: ['Exhibidores de producto', 'Letreros 3D', 'Etiquetas personalizadas'] },
+              { icon: '💅', biz: 'Salones & Spas', color: '#a78bfa', items: ['Organizadores de productos', 'Exhibidores de marca', 'Decoración con tu logo'] },
+              { icon: '🏪', biz: 'Boutiques / Tiendas', color: '#22d3ee', items: ['Exhibidores de producto', 'Letreros 3D para vitrina', 'Etiquetas personalizadas'] },
               { icon: '🔧', biz: 'Talleres / Industria', color: '#96d629', items: ['Piezas de repuesto', 'Herramientas custom', 'Prototipos rápidos'] },
               { icon: '🏆', biz: 'Clubes & Deportes', color: '#fbbf24', items: ['Trofeos personalizados', 'Llaveros del equipo', 'Accesorios de liga'] },
+              { icon: '🎓', biz: 'Escuelas / Educación', color: '#34d399', items: ['Placas y reconocimientos', 'Maquetas y modelos', 'Material didáctico 3D'] },
+              { icon: '🏥', biz: 'Médicos / Clínicas', color: '#38bdf8', items: ['Señalética de consultorio', 'Organizadores de escritorio', 'Placas de nombre y cargo'] },
+              { icon: '🏠', biz: 'Inmobiliarias', color: '#c084fc', items: ['Letras para fachada', 'Maquetas de proyectos', 'Accesorios de oficina'] },
+              { icon: '🎉', biz: 'Eventos & Bodas', color: '#fb7185', items: ['Souvenirs personalizados', 'Toppers de pastel', 'Decoración con nombres'] },
+              { icon: '🐾', biz: 'Veterinarias', color: '#86efac', items: ['Placas de identificación', 'Exhibidores de productos', 'Decoración de local'] },
+              { icon: '🏨', biz: 'Hoteles / Hospedaje', color: '#fcd34d', items: ['Señalética de habitaciones', 'Porta llaves 3D', 'Decoración de lobby'] },
+              { icon: '🖥️', biz: 'Oficinas / Corporativos', color: '#67e8f9', items: ['Logos 3D para recepción', 'Placas de escritorio', 'Accesorios con branding'] },
             ].map(item => (
               <div key={item.biz}
                 style={{
