@@ -751,37 +751,12 @@ export default function CatalogoPublico() {
             <p style={{ fontSize: 16, color: '#8888aa' }}>Selecciona y pide directamente por WhatsApp</p>
           </div>
 
-          {/* Category filter pills */}
-          {allPublished.length > 0 && (
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 40 }}>
-              {activeCats.map(cat => {
-                const isActive = activeCat === cat;
-                return (
-                  <button key={cat} onClick={() => setActiveCat(cat)}
-                    style={{
-                      padding: '10px 22px', borderRadius: 100,
-                      fontWeight: 800, fontSize: 13, cursor: 'pointer',
-                      border: isActive ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                      background: isActive ? 'linear-gradient(135deg, #96d629, #5c891a)' : 'rgba(255,255,255,0.04)',
-                      color: isActive ? '#0a1200' : '#aaaacc',
-                      transition: 'all .2s',
-                      boxShadow: isActive ? '0 4px 16px #96d62940' : 'none',
-                    }}>
-                    {cat}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Products grid */}
+          {/* Products — tiras horizontales por categoría */}
           {allPublished.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '80px 0' }}>
               <div style={{ fontSize: 64, marginBottom: 16 }}>📦</div>
               <p style={{ fontSize: 20, fontWeight: 700, color: '#666688' }}>Próximamente productos</p>
-              <p style={{ color: '#444466', marginTop: 8 }}>
-                Mientras tanto, ¡escríbenos tu idea personalizada!
-              </p>
+              <p style={{ color: '#444466', marginTop: 8 }}>Mientras tanto, ¡escríbenos tu idea personalizada!</p>
               <a href={`https://wa.me/${phone}?text=${encodeURIComponent('¡Hola Printoria! Tengo una idea para imprimir 🖨️')}`}
                 target="_blank" rel="noreferrer"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 24, background: 'linear-gradient(135deg,#25d366,#128c4e)', color: 'white', fontWeight: 800, padding: '12px 28px', borderRadius: 100, textDecoration: 'none' }}>
@@ -789,23 +764,63 @@ export default function CatalogoPublico() {
               </a>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
-              {filtered.map((p, idx) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                  idx={idx}
-                  multi={p.multi}
-                  onAdd={() => addToCart({ id: p.id, nombre: p.nombre, precio: p.precioVenta })}
-                  onWA={waLink(phone, `¡Hola Printoria! 🖨️ Me interesa el producto:\n\n*${p.nombre}*\nPrecio: ${fmt(p.precioVenta)}\n\n¿Está disponible? 😊`)}
-                  onOpen={() => setSelectedProduct(p)}
-                />
-              ))}
-              {filtered.length === 0 && (
-                <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: 40, color: '#666688' }}>
-                  No hay productos en esta categoría todavía
-                </div>
-              )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 52 }}>
+              {/* Una tira por cada categoría que tenga productos */}
+              {CATEGORIAS_ORDER.filter(cat => allPublished.some(p => (p.categorias || []).includes(cat))).map(cat => {
+                const catProds = allPublished.filter(p => (p.categorias || []).includes(cat));
+                return (
+                  <div key={cat}>
+                    {/* Encabezado de categoría */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
+                      <h3 style={{ fontSize: 20, fontWeight: 900, color: 'white', whiteSpace: 'nowrap' }}>{cat}</h3>
+                      <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, rgba(150,214,41,0.3), transparent)' }} />
+                      <span style={{ fontSize: 12, color: '#555577', whiteSpace: 'nowrap' }}>{catProds.length} {catProds.length === 1 ? 'producto' : 'productos'}</span>
+                    </div>
+                    {/* Tira horizontal con scroll */}
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: `repeat(${catProds.length}, minmax(260px, 300px))`,
+                      gap: 20,
+                      overflowX: 'auto',
+                      paddingBottom: 8,
+                    }}>
+                      {catProds.map((p, idx) => (
+                        <ProductCard
+                          key={p.id}
+                          product={p}
+                          idx={idx}
+                          multi={p.multi}
+                          onAdd={() => addToCart({ id: p.id, nombre: p.nombre, precio: p.precioVenta })}
+                          onWA={waLink(phone, `¡Hola Printoria! 🖨️ Me interesa el producto:\n\n*${p.nombre}*\nPrecio: ${fmt(p.precioVenta)}\n\n¿Está disponible? 😊`)}
+                          onOpen={() => setSelectedProduct(p)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+              {/* Productos sin categoría */}
+              {(() => {
+                const sinCat = allPublished.filter(p => !(p.categorias && p.categorias.length));
+                if (!sinCat.length) return null;
+                return (
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
+                      <h3 style={{ fontSize: 20, fontWeight: 900, color: 'white', whiteSpace: 'nowrap' }}>Otros</h3>
+                      <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, rgba(150,214,41,0.3), transparent)' }} />
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${sinCat.length}, minmax(260px, 300px))`, gap: 20, overflowX: 'auto', paddingBottom: 8 }}>
+                      {sinCat.map((p, idx) => (
+                        <ProductCard key={p.id} product={p} idx={idx} multi={p.multi}
+                          onAdd={() => addToCart({ id: p.id, nombre: p.nombre, precio: p.precioVenta })}
+                          onWA={waLink(phone, `¡Hola Printoria! 🖨️ Me interesa el producto:\n\n*${p.nombre}*\nPrecio: ${fmt(p.precioVenta)}\n\n¿Está disponible? 😊`)}
+                          onOpen={() => setSelectedProduct(p)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           )}
         </div>
