@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+﻿import { useState, useRef } from 'react';
 import { usePrintoria } from '../store/PrintoriaContext';
 import { initialConfig } from '../data/initialData';
 import { getNextId } from '../store/utils';
@@ -51,8 +51,59 @@ function AddonForm({ data, onSave, onCancel }) {
 const inp = 'w-full bg-zinc-100 border border-zinc-300 rounded-lg px-3 py-2 text-zinc-800 text-sm focus:border-[#96d629] focus:outline-none';
 const lbl = 'block text-xs font-medium text-zinc-400 mb-1';
 
+// ── Excel Cuboland: carga SheetJS y genera el archivo ──────────────────────
+function loadXLSX() {
+  return new Promise((resolve, reject) => {
+    if (window.XLSX) return resolve(window.XLSX);
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload = () => resolve(window.XLSX);
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function exportCuboland(products, multiProducts) {
+  const XLSX = await loadXLSX();
+  const wb = XLSX.utils.book_new();
+
+  // Combina simples y multimateriales ordenados por ID
+  const todos = [
+    ...products.map(p => ({ id: p.id, nombre: p.nombre, precio: p.precioVenta, tipo: 'Simple' })),
+    ...multiProducts.map(p => ({ id: p.id, nombre: p.nombre, precio: p.precioVenta, tipo: 'Multi' })),
+  ].sort((a, b) => a.id.localeCompare(b.id));
+
+  const aoa = [
+    ['', 'CUBOLAND', '', '', '', ''],
+    ['NOMBRE', '', 'FECHA', '', '', ''],
+    ['TELEFONO', '', 'CLAVE', '', '', ''],
+    ['CLAVE', 'PRODUCTO', 'PRECIO', 'PIEZAS', 'FECHA', ''],
+    ...todos.map(p => [p.id, p.nombre, p.precio, '', '', '']),
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+  ws['!cols'] = [{ wch: 13 }, { wch: 40 }, { wch: 13 }, { wch: 13 }, { wch: 13 }, { wch: 13 }];
+  ws['!merges'] = [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 4 } }, // B1:E1 CUBOLAND
+    { s: { r: 1, c: 2 }, e: { r: 1, c: 3 } }, // C2:D2 FECHA
+    { s: { r: 2, c: 2 }, e: { r: 2, c: 3 } }, // C3:D3 CLAVE
+  ];
+
+  // Formato precio columna C fila 5 en adelante
+  for (let i = 5; i <= 4 + todos.length; i++) {
+    const ref = `C${i}`;
+    if (ws[ref] && typeof ws[ref].v === 'number') ws[ref].z = '"$"#,##0.00';
+  }
+
+  XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
+  const hoy = new Date();
+  const fecha = `${hoy.getFullYear()}${String(hoy.getMonth()+1).padStart(2,'0')}${String(hoy.getDate()).padStart(2,'0')}`;
+  XLSX.writeFile(wb, `Cuboland_Inventario_${fecha}.xlsx`);
+}
+
 export default function Config() {
-  const { config, setConfig, addons, setAddons } = usePrintoria();
+  const { config, setConfig, addons, setAddons, products, multiProducts } = usePrintoria();
   const [editingAddon, setEditingAddon] = useState(null);
   // Merge con initialConfig para que campos nuevos tengan valor por defecto
   const [form, setForm] = useState({ ...initialConfig, ...config });
@@ -349,6 +400,23 @@ export default function Config() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Excel Cuboland */}
+      <div className="bg-white border border-zinc-200 rounded-xl p-6 space-y-4">
+        <div>
+          <p className="text-sm font-bold text-zinc-800">Exportar inventario Cuboland</p>
+          <p className="text-xs text-zinc-500 mt-1">
+            Descarga un Excel con todos tus productos (simples + multimaterial) en el formato Cuboland. Las columnas PIEZAS y FECHA las llenas tú después.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button onClick={() => exportCuboland(products, multiProducts)}
+            className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100 font-bold px-5 py-2 rounded-lg text-sm transition-colors">
+            📊 Descargar Excel Cuboland
+          </button>
+          <span className="text-xs text-zinc-400">{(products.length + multiProducts.length)} productos en total</span>
+        </div>
       </div>
 
       {/* Backup / Restore */}

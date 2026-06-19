@@ -198,82 +198,6 @@ function ProductoForm({ data, config, onSave, onCancel }) {
   );
 }
 
-// ── Genera y descarga el Excel formato Cuboland ──────────────────────────────
-function loadXLSX() {
-  return new Promise((resolve, reject) => {
-    if (window.XLSX) return resolve(window.XLSX);
-    const s = document.createElement('script');
-    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-    s.onload = () => resolve(window.XLSX);
-    s.onerror = reject;
-    document.head.appendChild(s);
-  });
-}
-
-async function exportCuboland(products) {
-  const XLSX = await loadXLSX();
-  const wb = XLSX.utils.book_new();
-
-  // Datos crudos (aoa = array of arrays)
-  const aoa = [
-    ['', 'CUBOLAND', '', '', '', ''],          // fila 1
-    ['NOMBRE', '', 'FECHA', '', '', ''],        // fila 2
-    ['TELEFONO', '', 'CLAVE', '', '', ''],      // fila 3
-    ['CLAVE', 'PRODUCTO', 'PRECIO', 'PIEZAS', 'FECHA', ''], // fila 4
-  ];
-
-  // Filas de productos (todos, no solo publicados)
-  products.forEach(p => {
-    aoa.push([p.id || '', p.nombre || '', p.precioVenta || 0, '', '', '']);
-  });
-
-  const ws = XLSX.utils.aoa_to_sheet(aoa);
-
-  // Anchos de columna (igual al template)
-  ws['!cols'] = [
-    { wch: 13 },   // A CLAVE
-    { wch: 40 },   // B PRODUCTO
-    { wch: 13 },   // C PRECIO
-    { wch: 13 },   // D PIEZAS
-    { wch: 13 },   // E FECHA
-    { wch: 13 },   // F
-  ];
-
-  // Merge B1 (CUBOLAND header) — igual al template donde B1 está centrado
-  ws['!merges'] = [
-    { s: { r: 0, c: 1 }, e: { r: 0, c: 4 } }, // B1:E1 — CUBOLAND
-    { s: { r: 1, c: 2 }, e: { r: 1, c: 3 } }, // C2:D2 — FECHA
-    { s: { r: 2, c: 2 }, e: { r: 2, c: 3 } }, // C3:D3 — CLAVE
-  ];
-
-  // Estilo helper
-  const bold = { font: { bold: true } };
-  const boldCenter = { font: { bold: true }, alignment: { horizontal: 'center' } };
-  const headerFill = { font: { bold: true }, fill: { fgColor: { rgb: 'D9D9D9' }, patternType: 'solid' }, alignment: { horizontal: 'center' }, border: { top: { style: 'medium' }, bottom: { style: 'medium' }, left: { style: 'thin' }, right: { style: 'thin' } } };
-
-  // Aplicar estilos (SheetJS CE no tiene estilos, pero xlsx-style sí — usamos write sin estilos por ahora)
-  // Títulos fila 1
-  if (ws['B1']) ws['B1'].s = boldCenter;
-  // Fila 2-3 labels
-  ['A2','C2','A3','C3'].forEach(r => { if (ws[r]) ws[r].s = bold; });
-  // Fila 4 headers
-  ['A4','B4','C4','D4','E4'].forEach(r => { if (ws[r]) ws[r].s = headerFill; });
-
-  // Formato de número para columna C (precio) — filas 5 en adelante
-  for (let i = 5; i <= 4 + products.length; i++) {
-    const ref = `C${i}`;
-    if (ws[ref] && typeof ws[ref].v === 'number') {
-      ws[ref].z = '"$"#,##0.00';
-    }
-  }
-
-  XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
-
-  const today = new Date();
-  const fecha = `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
-  XLSX.writeFile(wb, `Cuboland_Inventario_${fecha}.xlsx`);
-}
-
 export default function Productos() {
   const { products, setProducts, config } = usePrintoria();
   const [editing, setEditing] = useState(null);
@@ -305,16 +229,10 @@ export default function Productos() {
           <h1 className="text-2xl font-bold text-zinc-800">Productos Simples</h1>
           <p className="text-zinc-500 text-sm">{products.length} productos · 1 material por impresión</p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={() => exportCuboland(products)}
-            className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100 font-bold px-4 py-2 rounded-lg text-sm flex items-center gap-2">
-            📊 Excel Cuboland
-          </button>
-          <button onClick={() => setEditing(empty(products))}
-            className="bg-[#96d629] hover:bg-[#78b01e] text-black font-bold px-4 py-2 rounded-lg text-sm">
-            + Nuevo Producto
-          </button>
-        </div>
+        <button onClick={() => setEditing(empty(products))}
+          className="bg-[#96d629] hover:bg-[#78b01e] text-black font-bold px-4 py-2 rounded-lg text-sm">
+          + Nuevo Producto
+        </button>
       </div>
 
       <input className="w-full max-w-sm bg-white border border-zinc-200 rounded-lg px-3 py-2 text-zinc-800 text-sm focus:border-[#96d629] focus:outline-none placeholder-zinc-400"
