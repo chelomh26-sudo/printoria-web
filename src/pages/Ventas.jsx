@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
 import { usePrintoria } from '../store/PrintoriaContext';
 import Modal from '../components/Modal';
 import { calcSaleCosts, calcCostoPorGramo, getNextId, fmt, fmtN, fmtTime, TODAY } from '../store/utils';
@@ -64,7 +64,7 @@ function VentaForm({ data, products, materials, clients, config, addons, onSave,
         </div>
       </div>
 
-      {/* Cliente ID */}
+      {/* Cliente ID → auto-fill */}
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className={lbl}>ID Cliente</label>
@@ -76,7 +76,7 @@ function VentaForm({ data, products, materials, clients, config, addons, onSave,
         </div>
       </div>
 
-      {/* Producto */}
+      {/* Producto ID → auto-fill */}
       <div className="bg-zinc-50 rounded-lg p-3 space-y-3">
         <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Producto</p>
         <div className="grid grid-cols-2 gap-3">
@@ -108,7 +108,7 @@ function VentaForm({ data, products, materials, clients, config, addons, onSave,
         )}
       </div>
 
-      {/* Material */}
+      {/* Material ID → auto-fill */}
       <div className="bg-zinc-50 rounded-lg p-3 space-y-3">
         <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Material</p>
         <div className="grid grid-cols-2 gap-3">
@@ -215,13 +215,20 @@ export default function Ventas() {
   const [editing, setEditing] = useState(null);
   const [search, setSearch] = useState('');
 
-  const rows = useMemo(() => sales.map(s => ({
-    ...s,
-    _cliente: clients.find(c => c.id === s.clienteId),
-    _producto: products.find(p => p.id === s.productoId),
-    _material: materials.find(m => m.id === s.materialId),
-    get _calcs() { return calcSaleCosts(s, this._producto, this._material, config); },
-  })), [sales, clients, products, materials, config]);
+  const rows = useMemo(() => sales.map(s => {
+    const _addonTotal = (s.addonsIncluidos || []).reduce((sum, id) => {
+      const a = addons.find(x => x.id === id);
+      return sum + (a ? a.precioExtra * (Number(s.cantidad) || 1) : 0);
+    }, 0);
+    return {
+      ...s,
+      _cliente: clients.find(c => c.id === s.clienteId),
+      _producto: products.find(p => p.id === s.productoId),
+      _material: materials.find(m => m.id === s.materialId),
+      get _calcs() { return calcSaleCosts(s, this._producto, this._material, config); },
+      _addonTotal,
+    };
+  }), [sales, clients, products, materials, config, addons]);
 
   const filtered = rows.filter(r =>
     [r.id, r._cliente?.nombre, r._producto?.nombre, r._material?.nombre, r.estado].some(v => v?.toLowerCase().includes(search.toLowerCase()))
@@ -231,6 +238,7 @@ export default function Ventas() {
     const data = { ...f }; delete data._new;
     if (f._new) {
       if (sales.find(s => s.id === f.id)) return alert(`ID ${f.id} ya existe`);
+      // Verificar stock disponible para este producto
       const stockEntry = stock.find(s => s.productoId === f.productoId && s.cantidad > 0);
       if (stockEntry) {
         const usar = window.confirm(
@@ -243,6 +251,7 @@ export default function Ventas() {
           ).filter(s => s.cantidad > 0));
         }
       }
+      // Descontar stock de add-ons seleccionados
       if ((data.addonsIncluidos || []).length > 0 && addons.length > 0) {
         const qty = data.cantidad || 1;
         setAddons(addons.map(a =>
@@ -270,7 +279,14 @@ export default function Ventas() {
 
   const totales = useMemo(() => {
     let ingresos = 0, costos = 0, ganancia = 0;
-    rows.forEach(r => { if (r._calcs) { ingresos += r._calcs.precioPedido; costos += r._calcs.costoTotal; ganancia += r._calcs.ganancia; } });
+    rows.forEach(r => {
+      if (r._calcs) {
+        const precio = r._calcs.precioPedido + (r._addonTotal || 0);
+        ingresos += precio;
+        costos += r._calcs.costoTotal;
+        ganancia += precio - r._calcs.costoTotal;
+      }
+    });
     return { ingresos, costos, ganancia };
   }, [rows]);
 
@@ -287,6 +303,7 @@ export default function Ventas() {
         </button>
       </div>
 
+      {/* Totals bar */}
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-white border border-zinc-200 rounded-xl p-4">
           <p className="text-xs text-zinc-500">INGRESOS</p>
@@ -318,6 +335,9 @@ export default function Ventas() {
             <tbody className="divide-y divide-zinc-100">
               {filtered.map(r => {
                 const c = r._calcs;
+                const precioTotal = c ? c.precioPedido + (r._addonTotal || 0) : 0;
+                const gananciaTotal = c ? precioTotal - c.costoTotal : 0;
+                const margenTotal = precioTotal > 0 ? gananciaTotal / precioTotal : 0;
                 return (
                   <tr key={r.id} className="hover:bg-zinc-100/30 transition-colors">
                     <td className="py-3 px-3 font-mono text-[#96d629]">{r.id}</td>
@@ -330,9 +350,12 @@ export default function Ventas() {
                     <td className="py-3 px-3 text-zinc-400">{c ? `${fmtN(c.gramosTotal, 1)}g` : '—'}</td>
                     <td className="py-3 px-3 text-zinc-400">{c ? fmtTime(c.tiempoTotal) : '—'}</td>
                     <td className="py-3 px-3 text-red-400">{c ? fmt(c.costoTotal) : '—'}</td>
-                    <td className="py-3 px-3 font-semibold text-zinc-800">{c ? fmt(c.precioPedido) : '—'}</td>
-                    <td className={`py-3 px-3 font-semibold ${c && c.ganancia >= 0 ? 'text-green-400' : 'text-red-400'}`}>{c ? fmt(c.ganancia) : '—'}</td>
-                    <td className={`py-3 px-3 text-xs font-bold ${c && c.margen >= config.margenMinimo ? 'text-green-400' : 'text-yellow-400'}`}>{c ? `${(c.margen * 100).toFixed(1)}%` : '—'}</td>
+                    <td className="py-3 px-3 font-semibold text-zinc-800">
+                      {c ? fmt(precioTotal) : '—'}
+                      {r._addonTotal > 0 && <span className="ml-1 text-[10px] text-[#96d629] font-normal">+add-ons</span>}
+                    </td>
+                    <td className={`py-3 px-3 font-semibold ${gananciaTotal >= 0 ? 'text-green-400' : 'text-red-400'}`}>{c ? fmt(gananciaTotal) : '—'}</td>
+                    <td className={`py-3 px-3 text-xs font-bold ${margenTotal >= config.margenMinimo ? 'text-green-400' : 'text-yellow-400'}`}>{c ? `${(margenTotal * 100).toFixed(1)}%` : '—'}</td>
                     <td className="py-3 px-3">
                       <span className={`text-xs font-semibold px-2 py-1 rounded-full ${ESTADO_COLOR[r.estado] || 'bg-zinc-100 text-zinc-600'}`}>{r.estado}</span>
                     </td>
@@ -359,3 +382,4 @@ export default function Ventas() {
     </div>
   );
 }
+
