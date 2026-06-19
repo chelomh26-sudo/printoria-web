@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+﻿import { useState, useMemo, useRef } from 'react';
 import { usePrintoria } from '../store/PrintoriaContext';
 
 function compressImage(file) {
@@ -160,13 +160,13 @@ function ProductoForm({ data, config, onSave, onCancel }) {
             </div>
             <div>
               <label className={lbl}>Descripción pública</label>
-              <textarea className={inp} rows={2} value={f.descripcionPublica} onChange={e => set('descripcionPublica', e.target.value)} placeholder="Descripción para clientes..." />
+              <textarea className={inp} rows={3} value={f.descripcionPublica} onChange={e => set('descripcionPublica', e.target.value)} placeholder="Descripción para clientes..." />
             </div>
             <div>
               <label className={lbl}>Video del producto (URL de YouTube)</label>
               <input className={inp} value={f.videoUrl || ''} onChange={e => set('videoUrl', e.target.value)} placeholder="https://youtube.com/watch?v=..." />
             </div>
-                        <div>
+            <div>
               <label className={lbl}>Categorías (selecciona las que apliquen)</label>
               <div className="grid grid-cols-2 gap-1.5 mt-1">
                 {CATEGORIAS.map(cat => {
@@ -196,6 +196,82 @@ function ProductoForm({ data, config, onSave, onCancel }) {
       </div>
     </form>
   );
+}
+
+// ── Genera y descarga el Excel formato Cuboland ──────────────────────────────
+function loadXLSX() {
+  return new Promise((resolve, reject) => {
+    if (window.XLSX) return resolve(window.XLSX);
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload = () => resolve(window.XLSX);
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function exportCuboland(products) {
+  const XLSX = await loadXLSX();
+  const wb = XLSX.utils.book_new();
+
+  // Datos crudos (aoa = array of arrays)
+  const aoa = [
+    ['', 'CUBOLAND', '', '', '', ''],          // fila 1
+    ['NOMBRE', '', 'FECHA', '', '', ''],        // fila 2
+    ['TELEFONO', '', 'CLAVE', '', '', ''],      // fila 3
+    ['CLAVE', 'PRODUCTO', 'PRECIO', 'PIEZAS', 'FECHA', ''], // fila 4
+  ];
+
+  // Filas de productos (todos, no solo publicados)
+  products.forEach(p => {
+    aoa.push([p.id || '', p.nombre || '', p.precioVenta || 0, '', '', '']);
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+  // Anchos de columna (igual al template)
+  ws['!cols'] = [
+    { wch: 13 },   // A CLAVE
+    { wch: 40 },   // B PRODUCTO
+    { wch: 13 },   // C PRECIO
+    { wch: 13 },   // D PIEZAS
+    { wch: 13 },   // E FECHA
+    { wch: 13 },   // F
+  ];
+
+  // Merge B1 (CUBOLAND header) — igual al template donde B1 está centrado
+  ws['!merges'] = [
+    { s: { r: 0, c: 1 }, e: { r: 0, c: 4 } }, // B1:E1 — CUBOLAND
+    { s: { r: 1, c: 2 }, e: { r: 1, c: 3 } }, // C2:D2 — FECHA
+    { s: { r: 2, c: 2 }, e: { r: 2, c: 3 } }, // C3:D3 — CLAVE
+  ];
+
+  // Estilo helper
+  const bold = { font: { bold: true } };
+  const boldCenter = { font: { bold: true }, alignment: { horizontal: 'center' } };
+  const headerFill = { font: { bold: true }, fill: { fgColor: { rgb: 'D9D9D9' }, patternType: 'solid' }, alignment: { horizontal: 'center' }, border: { top: { style: 'medium' }, bottom: { style: 'medium' }, left: { style: 'thin' }, right: { style: 'thin' } } };
+
+  // Aplicar estilos (SheetJS CE no tiene estilos, pero xlsx-style sí — usamos write sin estilos por ahora)
+  // Títulos fila 1
+  if (ws['B1']) ws['B1'].s = boldCenter;
+  // Fila 2-3 labels
+  ['A2','C2','A3','C3'].forEach(r => { if (ws[r]) ws[r].s = bold; });
+  // Fila 4 headers
+  ['A4','B4','C4','D4','E4'].forEach(r => { if (ws[r]) ws[r].s = headerFill; });
+
+  // Formato de número para columna C (precio) — filas 5 en adelante
+  for (let i = 5; i <= 4 + products.length; i++) {
+    const ref = `C${i}`;
+    if (ws[ref] && typeof ws[ref].v === 'number') {
+      ws[ref].z = '"$"#,##0.00';
+    }
+  }
+
+  XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
+
+  const today = new Date();
+  const fecha = `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
+  XLSX.writeFile(wb, `Cuboland_Inventario_${fecha}.xlsx`);
 }
 
 export default function Productos() {
@@ -229,10 +305,16 @@ export default function Productos() {
           <h1 className="text-2xl font-bold text-zinc-800">Productos Simples</h1>
           <p className="text-zinc-500 text-sm">{products.length} productos · 1 material por impresión</p>
         </div>
-        <button onClick={() => setEditing(empty(products))}
-          className="bg-[#96d629] hover:bg-[#78b01e] text-black font-bold px-4 py-2 rounded-lg text-sm">
-          + Nuevo Producto
-        </button>
+        <div className="flex gap-2">
+          <button onClick={() => exportCuboland(products)}
+            className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-100 font-bold px-4 py-2 rounded-lg text-sm flex items-center gap-2">
+            📊 Excel Cuboland
+          </button>
+          <button onClick={() => setEditing(empty(products))}
+            className="bg-[#96d629] hover:bg-[#78b01e] text-black font-bold px-4 py-2 rounded-lg text-sm">
+            + Nuevo Producto
+          </button>
+        </div>
       </div>
 
       <input className="w-full max-w-sm bg-white border border-zinc-200 rounded-lg px-3 py-2 text-zinc-800 text-sm focus:border-[#96d629] focus:outline-none placeholder-zinc-400"
@@ -243,39 +325,39 @@ export default function Productos() {
           <table className="w-full text-sm">
             <thead className="border-b border-zinc-200">
               <tr>
-                {['ID', 'Nombre', 'Descripción', 'Gramos', 'T.Ender', 'T.Bambu', 'Precio', 'C.Op Ender', 'C.Op Bambu', ''].map(h => (
-                  <th key={h} className="text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider py-3 px-3 whitespace-nowrap">{h}</th>
+                {['ID', 'Nombre', 'Descripción', 'Gramos', 'T.Ender', 'T.Bambu', 'Precio', 'C.Op Ender', 'C.Op Bambu', 'Catálogo', ''].map(h => (
+                  <th key={h} className="text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider py-3 px-4 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100">
-              {filtered.map(p => (
-                <tr key={p.id} className="hover:bg-zinc-100/30 transition-colors">
-                  <td className="py-3 px-3 font-mono text-[#96d629]">{p.id}</td>
-                  <td className="py-3 px-3 font-medium text-zinc-800">{p.nombre}</td>
-                  <td className="py-3 px-3 text-zinc-500 max-w[140px] truncate">{p.descripcion || '—'}</td>
-                  <td className="py-3 px-3 text-zinc-400">{fmtN(p.gramos, 1)}g</td>
-                  <td className="py-3 px-3 text-zinc-400">{fmtN(p.tiempoEnder, 0)}m</td>
-                  <td className="py-3 px-3 text-zinc-400">{fmtN(p.tiempoBambu, 0)}m</td>
-                  <td className="py-3 px-3 font-semibold text-zinc-800">{fmt(p.precioVenta)}</td>
-                  <td className="py-3 px-3 text-red-400">{fmt((p.tiempoEnder||0)*(config.costLuzMin+config.costDesgasteMin))}</td>
-                  <td className="py-3 px-3 text-red-400">{fmt((p.tiempoBambu||0)*(config.costLuzMin+config.costDesgasteMin))}</td>
-                  <td className="py-3 px-3">
-                    <div className="flex gap-1">
-                      <button onClick={() => setEditing({ ...p, _new: false })} className="bg-zinc-200 hover:bg-zinc-500 text-white text-xs px-2 py-1 rounded transition-colors">✏</button>
-                      <button onClick={() => del(p.id)} className="bg-red-100 hover:bg-red-500 text-red-500 hover:text-white text-xs px-2 py-1 rounded transition-colors">✕</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {filtered.map(p => {
+                const costoOpEnder = (p.tiempoEnder || 0) * (config.costLuzMin + config.costDesgasteMin);
+                const costoOpBambu = (p.tiempoBambu || 0) * (config.costLuzMin + config.costDesgasteMin);
+                return (
+                  <tr key={p.id} className="hover:bg-zinc-100/30 transition-colors">
+                    <td className="py-3 px-4 font-mono text-[#96d629]">{p.id}</td>
+                    <td className="py-3 px-4 font-medium text-zinc-800">{p.nombre}</td>
+                    <td className="py-3 px-4 text-zinc-400 max-w-xs truncate">{p.descripcion}</td>
+                    <td className="py-3 px-4 text-zinc-600">{fmtN(p.gramos, 2)}g</td>
+                    <td className="py-3 px-4 text-zinc-600">{fmtTime(p.tiempoEnder)}</td>
+                    <td className="py-3 px-4 text-zinc-600">{fmtTime(p.tiempoBambu)}</td>
+                    <td className="py-3 px-4 font-semibold text-zinc-800">{fmt(p.precioVenta)}</td>
+                    <td className="py-3 px-4 text-zinc-400">{fmt(costoOpEnder)}</td>
+                    <td className="py-3 px-4 text-zinc-400">{fmt(costoOpBambu)}</td>
+                    <td className="py-3 px-4">{p.publicar ? <span className="text-green-400 text-xs font-bold">✓ SÍ</span> : <span className="text-zinc-600 text-xs">NO</span>}</td>
+                    <td className="py-3 px-4">
+                      <div className="flex gap-1">
+                        <button onClick={() => setEditing({ ...p })} className="bg-zinc-200 hover:bg-zinc-500 text-white px-3 py-1.5 rounded text-xs">✏️</button>
+                        <button onClick={() => del(p.id)} className="bg-red-600/80 hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs">🗑️</button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
-        {filtered.length === 0 && (
-          <div className="text-center py-12 text-zinc-400 text-sm">
-            {search ? 'Sin resultados.' : 'No hay productos. Crea el primero.'}
-          </div>
-        )}
       </div>
 
       {editing && (
@@ -286,3 +368,4 @@ export default function Productos() {
     </div>
   );
 }
+
