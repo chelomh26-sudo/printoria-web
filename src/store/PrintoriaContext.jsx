@@ -8,7 +8,7 @@ import { sbGet, sbSet, SUPABASE_READY } from '../lib/supabase';
 
 const initialCola = { bambu: [], ender: [] };
 
-/* ── localStorage persistente (datos privados) ──────────── */
+/* ── localStorage only (preferencias UI, no necesitan sincronización) ── */
 function usePersistentState(key, defaultValue) {
   const [state, setState] = useState(() => {
     try {
@@ -20,7 +20,7 @@ function usePersistentState(key, defaultValue) {
   return [state, setState];
 }
 
-/* ── Supabase + localStorage (datos públicos del catálogo) ─ */
+/* ── Supabase + localStorage fallback (todos los datos de negocio) ─── */
 function usePublicState(key, defaultValue) {
   const [state, setState] = useState(() => {
     try {
@@ -28,18 +28,16 @@ function usePublicState(key, defaultValue) {
       return s !== null ? JSON.parse(s) : defaultValue;
     } catch { return defaultValue; }
   });
-  const [loaded, setLoaded] = useState(false);
 
-  // Al montar: si Supabase está listo, carga desde ahí
+  // Al montar: carga desde Supabase si está disponible
   useEffect(() => {
-    if (!SUPABASE_READY) { setLoaded(true); return; }
+    if (!SUPABASE_READY) return;
     sbGet(key).then(remote => {
       if (remote !== null) setState(remote);
-      setLoaded(true);
     });
   }, [key]);
 
-  // Wrapper que guarda en localStorage Y en Supabase
+  // Guarda en localStorage Y en Supabase simultáneamente
   const setPublic = useCallback((valueOrFn) => {
     setState(prev => {
       const next = typeof valueOrFn === 'function' ? valueOrFn(prev) : valueOrFn;
@@ -49,38 +47,36 @@ function usePublicState(key, defaultValue) {
     });
   }, [key]);
 
-  return [state, setPublic, loaded];
+  return [state, setPublic];
 }
 
 const Ctx = createContext(null);
 
 export function PrintoriaProvider({ children }) {
-  const [theme, setTheme] = usePersistentState('printoria_theme', 'dark');
-
-  // Datos PÚBLICOS — se sincronizan con Supabase
-  const [_config, setConfigRaw, configLoaded] = usePublicState('printoria_config', initialConfig);
-  const config = { ...initialConfig, ..._config };
-  const setConfig = setConfigRaw;
-
-  const [products, setProducts, productsLoaded] = usePublicState('printoria_products', initialProducts);
-  const [galeriaFotos, setGaleriaFotos] = usePublicState('printoria_galeria', []);
-
-  // Datos PRIVADOS — solo localStorage
-  const [materials, setMaterials] = usePersistentState('printoria_materials', initialMaterials);
-  const [multiProducts, setMultiProducts] = usePersistentState('printoria_multiProducts', initialMultiProducts);
-  const [clients, setClients] = usePersistentState('printoria_clients', initialClients);
-  const [sales, setSales] = usePersistentState('printoria_sales', initialSales);
-  const [multiSales, setMultiSales] = usePersistentState('printoria_multiSales', initialMultiSales);
-  const [wholesale, setWholesale] = usePersistentState('printoria_wholesale', initialWholesale);
-  const [quotes, setQuotes] = usePersistentState('printoria_quotes', initialQuotes);
-  const [personal, setPersonal] = usePersistentState('printoria_personal', initialPersonal);
-  const [failures, setFailures] = usePersistentState('printoria_failures', initialFailures);
-  const [proceso, setProceso] = usePersistentState('printoria_proceso', initialProceso);
-  const [gastos, setGastos] = usePersistentState('printoria_gastos', initialGastos);
+  // Preferencias UI — solo localStorage
+  const [theme, setTheme]               = usePersistentState('printoria_theme', 'dark');
   const [selectedMonth, setSelectedMonth] = usePersistentState('printoria_selectedMonth', 'all');
-  const [cola, setCola] = usePersistentState('printoria_cola', initialCola);
-  const [stock, setStock] = usePersistentState('printoria_stock', []);
-  const [addons, setAddons] = usePersistentState('printoria_addons', []);
+  const [cola, setCola]                 = usePersistentState('printoria_cola', initialCola);
+
+  // Datos de negocio — Supabase + localStorage fallback
+  const [_config, setConfig]            = usePublicState('printoria_config',       initialConfig);
+  const config = { ...initialConfig, ..._config };
+
+  const [products, setProducts]         = usePublicState('printoria_products',     initialProducts);
+  const [galeriaFotos, setGaleriaFotos] = usePublicState('printoria_galeria',      []);
+  const [materials, setMaterials]       = usePublicState('printoria_materials',    initialMaterials);
+  const [multiProducts, setMultiProducts] = usePublicState('printoria_multiProducts', initialMultiProducts);
+  const [clients, setClients]           = usePublicState('printoria_clients',      initialClients);
+  const [sales, setSales]               = usePublicState('printoria_sales',        initialSales);
+  const [multiSales, setMultiSales]     = usePublicState('printoria_multiSales',   initialMultiSales);
+  const [wholesale, setWholesale]       = usePublicState('printoria_wholesale',    initialWholesale);
+  const [quotes, setQuotes]             = usePublicState('printoria_quotes',       initialQuotes);
+  const [personal, setPersonal]         = usePublicState('printoria_personal',     initialPersonal);
+  const [failures, setFailures]         = usePublicState('printoria_failures',     initialFailures);
+  const [proceso, setProceso]           = usePublicState('printoria_proceso',      initialProceso);
+  const [gastos, setGastos]             = usePublicState('printoria_gastos',       initialGastos);
+  const [stock, setStock]               = usePublicState('printoria_stock',        []);
+  const [addons, setAddons]             = usePublicState('printoria_addons',       []);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -107,7 +103,6 @@ export function PrintoriaProvider({ children }) {
       stock, setStock,
       addons, setAddons,
       galeriaFotos, setGaleriaFotos,
-      // Indicadores de carga (útil para mostrar spinner mientras carga de Supabase)
       supabaseReady: SUPABASE_READY,
     }}>
       {children}
