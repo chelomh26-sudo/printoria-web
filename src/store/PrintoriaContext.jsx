@@ -7,6 +7,10 @@ import {
 } from '../data/initialData';
 import { sbGet, sbSet, SUPABASE_READY } from '../lib/supabase';
 
+// Incrementa este valor cada vez que se actualicen los datos en initialData.js
+// para forzar un reset del localStorage en todos los browsers.
+const DATA_VERSION = '20260625-v2';
+
 const initialCola = { bambu: [], ender: [] };
 
 /* ââ localStorage persistente (datos privados) ââââââââââââ */
@@ -31,7 +35,6 @@ function usePublicState(key, defaultValue) {
   });
   const [loaded, setLoaded] = useState(false);
 
-  // Al montar: si Supabase estÃ¡ listo, carga desde ahÃ­
   useEffect(() => {
     if (!SUPABASE_READY) { setLoaded(true); return; }
     sbGet(key).then(remote => {
@@ -40,7 +43,6 @@ function usePublicState(key, defaultValue) {
     });
   }, [key]);
 
-  // Wrapper que guarda en localStorage Y en Supabase
   const setPublic = useCallback((valueOrFn) => {
     setState(prev => {
       const next = typeof valueOrFn === 'function' ? valueOrFn(prev) : valueOrFn;
@@ -56,6 +58,23 @@ function usePublicState(key, defaultValue) {
 const Ctx = createContext(null);
 
 export function PrintoriaProvider({ children }) {
+  // ââ Reset de localStorage cuando DATA_VERSION cambia ââââââââââ
+  useEffect(() => {
+    const stored = localStorage.getItem('printoria_data_version');
+    if (stored !== DATA_VERSION) {
+      const keys = [
+        'printoria_sales', 'printoria_products', 'printoria_materials',
+        'printoria_clients', 'printoria_stock', 'printoria_proceso',
+        'printoria_personal', 'printoria_failures', 'printoria_gastos',
+        'printoria_wholesale', 'printoria_quotes', 'printoria_multiProducts',
+        'printoria_multiSales', 'printoria_addons', 'printoria_config',
+      ];
+      keys.forEach(k => localStorage.removeItem(k));
+      localStorage.setItem('printoria_data_version', DATA_VERSION);
+      window.location.reload();
+    }
+  }, []);
+
   const [theme, setTheme] = usePersistentState('printoria_theme', 'dark');
 
   // Datos PÃBLICOS â se sincronizan con Supabase
