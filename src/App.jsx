@@ -16,7 +16,6 @@ import Fallas from './pages/Fallas';
 import Proceso from './pages/Proceso';
 import CatalogoPublico from './pages/CatalogoPublico';
 import Finances from './pages/Finances';
-import ColaImpresion from './pages/ColaImpresion';
 import Stock from './pages/Stock';
 import GaleriaAdmin from './pages/GaleriaAdmin';
 import ChatPanel from './components/ChatPanel';
@@ -77,7 +76,6 @@ const PAGES = {
   personal: UsoPersonal,
   fallas: Fallas,
   proceso: Proceso,
-  cola: ColaImpresion,
   stock: Stock,
   galeria: GaleriaAdmin,
   catalogo: CatalogoPublico,
