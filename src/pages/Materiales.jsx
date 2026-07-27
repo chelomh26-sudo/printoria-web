@@ -44,14 +44,17 @@ function empty(mats) {
   return { id: getNextId(mats, 'M'), nombre: '', marca: '', tipo: 'Básico', estado: 'Disponible', tienda: '', link: '', precioRollo: 0, rollos: 1, pesoInicial: 1000, _new: true };
 }
 
-function MaterialForm({ data, onSave, onCancel }) {
+function MaterialForm({ data, existingTipos = [], onSave, onCancel }) {
+  const BASE = ['Básico', 'Tornasol'];
   const [f, setF] = useState({ ...data });
+  const [customMode, setCustomMode] = useState(!!f.tipo && !BASE.includes(f.tipo));
   const set = (k, v) => setF(p => ({ ...p, [k]: v }));
 
   function submit(e) {
     e.preventDefault();
     if (!f.id.trim()) return alert('ID requerido');
-    onSave({ ...f, precioRollo: Number(f.precioRollo) || 0 });
+    if (!f.tipo || !f.tipo.trim()) return alert('Elige o escribe el tipo');
+    onSave({ ...f, tipo: f.tipo.trim(), precioRollo: Number(f.precioRollo) || 0 });
   }
 
   return (
@@ -71,9 +74,15 @@ function MaterialForm({ data, onSave, onCancel }) {
         </div>
         <div>
           <label className={lbl}>Tipo</label>
-          <select className={inp} value={f.tipo} onChange={e => set('tipo', e.target.value)}>
-            {TIPOS.map(t => <option key={t}>{t}</option>)}
+          <select className={inp} value={customMode ? '__otro__' : f.tipo}
+            onChange={e => { if (e.target.value === '__otro__') { setCustomMode(true); set('tipo', ''); } else { setCustomMode(false); set('tipo', e.target.value); } }}>
+            {[...new Set(['Básico', 'Tornasol', ...existingTipos])].map(t => <option key={t} value={t}>{t}</option>)}
+            <option value="__otro__">Otro / especial…</option>
           </select>
+          {customMode && (
+            <input className={`${inp} mt-2`} value={f.tipo} onChange={e => set('tipo', e.target.value)} placeholder="Nombre del tipo (ej. TPU, PETG)" />
+          )}
+          {customMode && <p className="text-[11px] text-zinc-400 mt-1">Especial: usa su propio precio de abajo (no el precio base).</p>}
         </div>
         <div>
           <label className={lbl}>Estado</label>
@@ -108,6 +117,7 @@ export default function Materiales() {
   const [search, setSearch] = useState('');
 
   const rows = useMemo(() => materials.map(normalize), [materials]);
+  const existingTipos = useMemo(() => [...new Set(materials.map(m => (m.tipo || '')).filter(t => t && !['Básico', 'Tornasol'].includes(t)))], [materials]);
   const filtered = rows.filter(r =>
     [r.id, r.nombre, r.marca, r.tipo, r.estado].some(v => v?.toLowerCase().includes(search.toLowerCase()))
   );
@@ -132,7 +142,7 @@ export default function Materiales() {
     if (window.confirm(`¿Eliminar ${id}?`)) setMaterials(materials.filter(m => m.id !== id));
   }
 
-  const basePrice = (tipo) => tipo === 'Tornasol' ? (config.precioBaseTornasol ?? 0) : (config.precioBaseBasico ?? 0);
+  const basePrice = (tipo) => tipo === 'Tornasol' ? (config.precioBaseTornasol ?? 0) : tipo === 'Básico' ? (config.precioBaseBasico ?? 0) : 0;
 
   return (
     <div className="p-6 space-y-5">
@@ -206,7 +216,7 @@ export default function Materiales() {
                     </td>
                     <td className="py-3 px-4 text-zinc-600">{m.marca || '—'}</td>
                     <td className="py-3 px-4 text-zinc-600">{m.tipo}</td>
-                    <td className="py-3 px-4 text-zinc-600">{m.precioRollo ? fmt(m.precioRollo) : <span className="text-zinc-400">base {fmt(basePrice(m.tipo))}</span>}</td>
+                    <td className="py-3 px-4 text-zinc-600">{m.precioRollo ? fmt(m.precioRollo) : (['Básico', 'Tornasol'].includes(m.tipo) ? <span className="text-zinc-400">base {fmt(basePrice(m.tipo))}</span> : '—')}</td>
                     <td className="py-3 px-4">
                       <button onClick={() => cycleEstado(m)} title="Toca para cambiar"
                         className={`text-xs font-bold px-3 py-1.5 rounded-full ${ESTADO_STYLE[m.estado]}`}>
@@ -235,7 +245,7 @@ export default function Materiales() {
 
       {editing && (
         <Modal title={editing._new ? 'Nuevo Material' : `Editar ${editing.id}`} onClose={() => setEditing(null)}>
-          <MaterialForm data={editing} onSave={save} onCancel={() => setEditing(null)} />
+          <MaterialForm data={editing} existingTipos={existingTipos} onSave={save} onCancel={() => setEditing(null)} />
         </Modal>
       )}
     </div>
