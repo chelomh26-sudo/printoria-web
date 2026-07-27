@@ -90,7 +90,7 @@ export function PrintoriaProvider({ children }) {
   const [materials, setMaterials] = usePersistentState('printoria_materials', initialMaterials);
   const [multiProducts, setMultiProducts] = usePersistentState('printoria_multiProducts', initialMultiProducts);
   const [clients, setClients] = usePersistentState('printoria_clients', initialClients);
-  const [sales, setSales] = usePersistentState('printoria_sales', initialSales);
+  const [sales, setSales] = usePublicState('printoria_sales', initialSales); // sincronizado con Supabase (POS + web comparten ventas)
   const [multiSales, setMultiSales] = usePersistentState('printoria_multiSales', initialMultiSales);
   const [wholesale, setWholesale] = usePersistentState('printoria_wholesale', initialWholesale);
   const [quotes, setQuotes] = usePersistentState('printoria_quotes', initialQuotes);
