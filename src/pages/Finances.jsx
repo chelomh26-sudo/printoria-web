@@ -4,6 +4,14 @@ import { calcCostoPorGramo, calcSaleCosts, fmt, fmtN } from '../store/utils';
 
 const CATEGORIAS = ['Impresoras', 'Herramientas', 'Materiales', 'Renta / Luz', 'Otros'];
 
+// Ingreso de una venta: usa total directo (modelo simple) o cae al cálculo viejo
+function saleTotal(s, products) {
+  if (typeof s.total === 'number') return s.total;
+  const p = products.find(x => x.id === s.productoId);
+  const precio = (s.precioUnitario != null ? s.precioUnitario : (p ? p.precioVenta : 0)) || 0;
+  return precio * (s.cantidad || 1);
+}
+
 const CAT_ICONS = {
   'Impresoras': '🖨️',
   'Herramientas': '🔧',
@@ -120,10 +128,7 @@ function FinancesContent() {
   const ingresos = useMemo(() => {
     let total = 0;
     filterByMonth(sales).forEach(s => {
-      const p = products.find(x => x.id === s.productoId);
-      const m = materials.find(x => x.id === s.materialId);
-      const c = calcSaleCosts(s, p, m, config);
-      if (c) total += c.precioPedido;
+      total += saleTotal(s, products);
     });
     filterByMonth(wholesale).forEach(w => {
       total += ((w.precioUnitario || 0) - (w.descuento || 0)) * (w.cantidad || 1);
