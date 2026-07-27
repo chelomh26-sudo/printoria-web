@@ -4,7 +4,6 @@ import { usePrintoria } from '../store/PrintoriaContext';
 const GROUPS = [
   { label: null, items: [{ id: 'dashboard', label: 'Dashboard', icon: '📊' }] },
   { label: null, items: [{ id: 'proceso', label: 'Proceso', icon: '🔄' }] },
-  { label: null, items: [{ id: 'cola', label: 'Cola Impresion', icon: '🖨️' }] },
   { label: null, items: [{ id: 'finances', label: 'Finances 🔒', icon: '💵' }] },
   { label: null, items: [{ id: 'config', label: 'Configuracion', icon: '⚙️' }] },
   {
