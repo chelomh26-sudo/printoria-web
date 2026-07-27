@@ -8,6 +8,8 @@ export const initialConfig = {
   precioHoraTrabajo: 100,
   iva: 0,
   margenMinimo: 0.30,
+  precioBaseBasico: 280,
+  precioBaseTornasol: 450,
   whatsapp: '528341112949',
   instagram: 'printoria3dstudio',
   facebook: 'printoria3dstudio',
