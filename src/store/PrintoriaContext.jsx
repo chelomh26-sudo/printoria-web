@@ -87,7 +87,7 @@ export function PrintoriaProvider({ children }) {
   const [galeriaFotos, setGaleriaFotos] = usePublicState('printoria_galeria', []);
 
   // Datos PRIVADOS â solo localStorage
-  const [materials, setMaterials] = usePersistentState('printoria_materials', initialMaterials);
+  const [materials, setMaterials] = usePublicState('printoria_materials', initialMaterials); // nube (inventario compartido / Jarvis)
   const [multiProducts, setMultiProducts] = usePersistentState('printoria_multiProducts', initialMultiProducts);
   const [clients, setClients] = usePersistentState('printoria_clients', initialClients);
   const [sales, setSales] = usePublicState('printoria_sales', initialSales); // sincronizado con Supabase (POS + web comparten ventas)
@@ -101,7 +101,7 @@ export function PrintoriaProvider({ children }) {
   const [ingresosExtra, setIngresosExtra] = usePersistentState('printoria_ingresosExtra', []);
   const [selectedMonth, setSelectedMonth] = usePersistentState('printoria_selectedMonth', 'all');
   const [cola, setCola] = usePersistentState('printoria_cola', initialCola);
-  const [stock, setStock] = usePersistentState('printoria_stock', initialStock);
+  const [stock, setStock] = usePublicState('printoria_stock', initialStock); // nube (inventario compartido / Jarvis)
   const [addons, setAddons] = usePersistentState('printoria_addons', []);
 
   useEffect(() => {
