@@ -68,6 +68,7 @@ export function PrintoriaProvider({ children }) {
         'printoria_personal', 'printoria_failures', 'printoria_gastos',
         'printoria_wholesale', 'printoria_quotes', 'printoria_multiProducts',
         'printoria_multiSales', 'printoria_addons', 'printoria_config',
+        'printoria_ingresosExtra',
       ];
       keys.forEach(k => localStorage.removeItem(k));
       localStorage.setItem('printoria_data_version', DATA_VERSION);
@@ -97,6 +98,7 @@ export function PrintoriaProvider({ children }) {
   const [failures, setFailures] = usePersistentState('printoria_failures', initialFailures);
   const [proceso, setProceso] = usePersistentState('printoria_proceso', initialProceso);
   const [gastos, setGastos] = usePersistentState('printoria_gastos', initialGastos);
+  const [ingresosExtra, setIngresosExtra] = usePersistentState('printoria_ingresosExtra', []);
   const [selectedMonth, setSelectedMonth] = usePersistentState('printoria_selectedMonth', 'all');
   const [cola, setCola] = usePersistentState('printoria_cola', initialCola);
   const [stock, setStock] = usePersistentState('printoria_stock', initialStock);
@@ -122,6 +124,7 @@ export function PrintoriaProvider({ children }) {
       failures, setFailures,
       proceso, setProceso,
       gastos, setGastos,
+      ingresosExtra, setIngresosExtra,
       selectedMonth, setSelectedMonth,
       cola, setCola,
       stock, setStock,
