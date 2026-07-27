@@ -12,6 +12,21 @@ const CAT_ICONS = {
   'Otros': '📦',
 };
 
+const CATEGORIAS_INGRESO = ['Libre 17', 'Rifa', 'Venta directa', 'Donación', 'Otros'];
+const CAT_ING_ICONS = {
+  'Libre 17': '🛒',
+  'Rifa': '🎟️',
+  'Venta directa': '💵',
+  'Donación': '🎁',
+  'Otros': '➕',
+};
+
+function getNextIngresoId(items) {
+  if (!items.length) return 'I001';
+  const nums = items.map(g => parseInt(String(g.id).replace('I', '')) || 0);
+  return 'I' + String(Math.max(...nums) + 1).padStart(3, '0');
+}
+
 const inp = 'w-full bg-zinc-100 border border-zinc-300 rounded-lg px-3 py-2 text-zinc-800 text-sm focus:border-[#96d629] focus:outline-none';
 const lbl = 'block text-xs font-medium text-zinc-400 mb-1';
 
@@ -81,12 +96,18 @@ export default function Finances() {
 }
 
 function FinancesContent() {
-  const { gastos, setGastos, sales, wholesale, multiSales, products, multiProducts, materials, failures, config, selectedMonth, addons, stock } = usePrintoria();
+  const { gastos, setGastos, ingresosExtra, setIngresosExtra, sales, wholesale, multiSales, products, multiProducts, materials, failures, config, selectedMonth, addons, stock } = usePrintoria();
 
   const empty = { fecha: new Date().toISOString().slice(0, 10), categoria: 'Impresoras', descripcion: '', monto: '' };
   const [form, setForm] = useState(empty);
   const [editId, setEditId] = useState(null);
   const [filterCat, setFilterCat] = useState('all');
+
+  const emptyIng = { fecha: new Date().toISOString().slice(0, 10), categoria: 'Libre 17', descripcion: '', monto: '' };
+  const [formIng, setFormIng] = useState(emptyIng);
+  const [editIngId, setEditIngId] = useState(null);
+  const [filterIngCat, setFilterIngCat] = useState('all');
+  const setIng = (k, v) => setFormIng(f => ({ ...f, [k]: v }));
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
@@ -111,8 +132,15 @@ function FinancesContent() {
       const p = multiProducts.find(x => x.id === s.productoId);
       if (p) total += p.precioVenta * (s.cantidad || 1);
     });
+    filterByMonth(ingresosExtra || []).forEach(e => { total += parseFloat(e.monto) || 0; });
     return total;
-  }, [sales, wholesale, multiSales, products, multiProducts, materials, config, selectedMonth]);
+  }, [sales, wholesale, multiSales, ingresosExtra, products, multiProducts, materials, config, selectedMonth]);
+
+  // Ingresos extra (sin productos): rifa, ventas directas de Libre 17, donaciones, etc.
+  const ingresosExtraTotal = useMemo(
+    () => filterByMonth(ingresosExtra || []).reduce((s, e) => s + (parseFloat(e.monto) || 0), 0),
+    [ingresosExtra, selectedMonth]
+  );
 
   // Costo de producción del periodo
   const costoProduccion = useMemo(() => {
@@ -190,6 +218,26 @@ function FinancesContent() {
     if (editId === id) { setEditId(null); setForm(empty); }
   }
 
+  function handleSaveIng() {
+    if (!formIng.descripcion.trim() || !formIng.monto) return;
+    if (editIngId) {
+      setIngresosExtra((ingresosExtra || []).map(g => g.id === editIngId ? { ...g, ...formIng, monto: parseFloat(formIng.monto) } : g));
+      setEditIngId(null);
+    } else {
+      setIngresosExtra([...(ingresosExtra || []), { id: getNextIngresoId(ingresosExtra || []), ...formIng, monto: parseFloat(formIng.monto) }]);
+    }
+    setFormIng(emptyIng);
+  }
+  function handleEditIng(g) {
+    setFormIng({ fecha: g.fecha, categoria: g.categoria, descripcion: g.descripcion, monto: String(g.monto) });
+    setEditIngId(g.id);
+  }
+  function handleDeleteIng(id) {
+    setIngresosExtra((ingresosExtra || []).filter(g => g.id !== id));
+    if (editIngId === id) { setEditIngId(null); setFormIng(emptyIng); }
+  }
+  const ingresosExtraFiltered = filterIngCat === 'all' ? (ingresosExtra || []) : (ingresosExtra || []).filter(g => g.categoria === filterIngCat);
+
   const gastosFiltered = filterCat === 'all' ? gastos : gastos.filter(g => g.categoria === filterCat);
   const maxCat = Math.max(...Object.values(gastosPorCat), 1);
 
@@ -211,7 +259,12 @@ function FinancesContent() {
         <div className="bg-white border border-green-500/30 rounded-xl p-5">
           <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Ingresos</p>
           <p className="text-2xl font-bold text-green-400">{fmt(ingresos)}</p>
-          <p className="text-xs text-zinc-500 mt-1">Ventas del periodo</p>
+          <p className="text-xs text-zinc-500 mt-1">Ventas {fmt(ingresos - ingresosExtraTotal)} + extra {fmt(ingresosExtraTotal)}</p>
+        </div>
+        <div className="bg-white border border-emerald-500/30 rounded-xl p-5">
+          <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Ingresos Extra</p>
+          <p className="text-2xl font-bold text-emerald-500">{fmt(ingresosExtraTotal)}</p>
+          <p className="text-xs text-zinc-500 mt-1">Rifa, Libre 17, ventas directas</p>
         </div>
         <div className="bg-white border border-zinc-200 rounded-xl p-5">
           <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Costo Producción</p>
@@ -353,6 +406,98 @@ function FinancesContent() {
           )}
         </div>
       </div>
+
+      {/* ===== Otros ingresos (dinero sin productos) ===== */}
+      <div>
+        <h2 className="text-sm font-bold text-zinc-800 mb-1">💰 Otros ingresos (sin productos)</h2>
+        <p className="text-zinc-500 text-xs mb-4">Rifa, ventas directas de Libre 17, donaciones... dinero que no pasa por el catálogo. Suma a tus Ingresos y Ganancia Real.</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Formulario ingreso */}
+          <div className="bg-white border border-emerald-500/30 rounded-xl p-5 space-y-4">
+            <h2 className="text-sm font-bold text-zinc-800">{editIngId ? '✏️ Editar ingreso' : '+ Registrar ingreso'}</h2>
+            <div>
+              <label className={lbl}>Fecha</label>
+              <input type="date" className={inp} value={formIng.fecha} onChange={e => setIng('fecha', e.target.value)} />
+            </div>
+            <div>
+              <label className={lbl}>Categoría</label>
+              <select className={inp} value={formIng.categoria} onChange={e => setIng('categoria', e.target.value)}>
+                {CATEGORIAS_INGRESO.map(c => <option key={c}>{c}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={lbl}>Descripción</label>
+              <input type="text" className={inp} placeholder="Ej: Libre 17 - domingo 26 jul" value={formIng.descripcion} onChange={e => setIng('descripcion', e.target.value)} />
+            </div>
+            <div>
+              <label className={lbl}>Monto ($)</label>
+              <input type="number" step="0.01" min="0" className={inp} placeholder="0.00" value={formIng.monto} onChange={e => setIng('monto', e.target.value)} />
+            </div>
+            <div className="flex gap-2">
+              <button onClick={handleSaveIng}
+                disabled={!formIng.descripcion.trim() || !formIng.monto}
+                className="flex-1 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-40 text-white font-bold py-2 rounded-lg text-sm transition-colors">
+                {editIngId ? 'Actualizar' : 'Guardar ingreso'}
+              </button>
+              {editIngId && (
+                <button onClick={() => { setEditIngId(null); setFormIng(emptyIng); }}
+                  className="px-4 bg-zinc-100 hover:bg-zinc-200 text-zinc-600 font-semibold py-2 rounded-lg text-sm transition-colors">
+                  Cancelar
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Lista de ingresos */}
+          <div className="lg:col-span-2 bg-white border border-zinc-200 rounded-xl overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-zinc-200">
+              <h2 className="text-sm font-bold text-zinc-800">Historial de ingresos extra</h2>
+              <select className="bg-zinc-100 border border-zinc-300 rounded-lg px-2 py-1 text-xs text-zinc-700 focus:border-[#96d629] focus:outline-none"
+                value={filterIngCat} onChange={e => setFilterIngCat(e.target.value)}>
+                <option value="all">Todas las categorías</option>
+                {CATEGORIAS_INGRESO.map(c => <option key={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="overflow-auto max-h-96">
+              <table className="w-full text-sm">
+                <thead className="border-b border-zinc-200 sticky top-0 bg-white">
+                  <tr>
+                    {['Fecha', 'Categoría', 'Descripción', 'Monto', ''].map(h => (
+                      <th key={h} className="text-left text-xs font-semibold text-zinc-400 uppercase tracking-wider py-3 px-3">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-100">
+                  {ingresosExtraFiltered.slice().reverse().map(g => (
+                    <tr key={g.id} className={`hover:bg-zinc-100/30 transition-colors ${editIngId === g.id ? 'bg-emerald-500/5' : ''}`}>
+                      <td className="py-2 px-3 text-zinc-400 text-xs whitespace-nowrap">{g.fecha}</td>
+                      <td className="py-2 px-3"><span className="text-xs">{CAT_ING_ICONS[g.categoria] || '➕'} {g.categoria}</span></td>
+                      <td className="py-2 px-3 text-zinc-800 text-xs">{g.descripcion}</td>
+                      <td className="py-2 px-3 font-bold text-emerald-500 text-xs whitespace-nowrap">{fmt(g.monto)}</td>
+                      <td className="py-2 px-3">
+                        <div className="flex gap-2">
+                          <button onClick={() => handleEditIng(g)} className="text-zinc-500 hover:text-[#96d629] text-xs transition-colors">✏️</button>
+                          <button onClick={() => handleDeleteIng(g.id)} className="text-zinc-500 hover:text-red-400 text-xs transition-colors">🗑</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {ingresosExtraFiltered.length === 0 && (
+                    <tr><td colSpan={5} className="py-10 text-center text-zinc-600 text-sm">Sin ingresos extra registrados aún</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {ingresosExtraFiltered.length > 0 && (
+              <div className="border-t border-zinc-200 px-4 py-3 flex justify-between items-center">
+                <span className="text-xs text-zinc-500">{ingresosExtraFiltered.length} registros</span>
+                <span className="text-sm font-bold text-emerald-500">Total: {fmt(ingresosExtraFiltered.reduce((s, g) => s + (parseFloat(g.monto) || 0), 0))}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
