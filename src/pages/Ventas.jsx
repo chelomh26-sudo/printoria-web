@@ -128,6 +128,7 @@ export default function Ventas() {
   const { sales, setSales, products } = usePrintoria();
   const [editing, setEditing] = useState(null);
   const [search, setSearch] = useState('');
+  const [selectedDate, setSelectedDate] = useState(TODAY());
 
   const rows = useMemo(() => sales.map(s => ({
     ...s,
@@ -135,7 +136,8 @@ export default function Ventas() {
     _total: saleTotal(s, products),
   })), [sales, products]);
 
-  const filtered = rows.filter(r =>
+  const dayRows = selectedDate === 'all' ? rows : rows.filter(r => r.fecha === selectedDate);
+  const filtered = dayRows.filter(r =>
     [r.id, r._producto, r.tipo, r.color, r.clienteId, r.estado, r.origen].some(v => (v || '').toString().toLowerCase().includes(search.toLowerCase()))
   ).slice().sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
 
@@ -155,17 +157,41 @@ export default function Ventas() {
   }
 
   const totales = useMemo(() => {
-    const ingresos = rows.reduce((a, r) => a + (r._total || 0), 0);
-    const piezas = rows.reduce((a, r) => a + (Number(r.cantidad) || 0), 0);
-    return { ingresos, piezas, n: rows.length };
-  }, [rows]);
+    const valid = dayRows.filter(r => r.estado !== 'CANCELADO');
+    const ingresos = valid.reduce((a, r) => a + (r._total || 0), 0);
+    const piezas = valid.reduce((a, r) => a + (Number(r.cantidad) || 0), 0);
+    return { ingresos, piezas, n: valid.length };
+  }, [dayRows]);
+
+  function moveDay(delta) {
+    const base = selectedDate === 'all' ? TODAY() : selectedDate;
+    const date = new Date(`${base}T12:00:00`);
+    date.setDate(date.getDate() + delta);
+    setSelectedDate(new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Monterrey', year: 'numeric', month: '2-digit', day: '2-digit',
+    }).format(date));
+  }
+
+  function exportDay() {
+    const esc = value => `"${String(value ?? '').replaceAll('"', '""')}"`;
+    const columns = ['ID', 'Fecha', 'Producto', 'Tipo', 'Color', 'Cantidad', 'Precio unitario', 'Total', 'Cliente', 'Estado', 'Origen'];
+    const data = filtered.map(r => [r.id, r.fecha, r._producto, r.tipo, r.color, r.cantidad, r.precioUnitario, r._total, r.clienteId, r.estado, r.origen]);
+    const csv = [columns, ...data].map(row => row.map(esc).join(',')).join('\n');
+    const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `ventas-${selectedDate === 'all' ? 'historial' : selectedDate}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
 
   return (
     <div className="p-6 space-y-5">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-zinc-800">Ventas</h1>
-          <p className="text-zinc-500 text-sm">{sales.length} ventas · registro rápido</p>
+          <p className="text-zinc-500 text-sm">Historial por día · zona horaria de Monterrey</p>
         </div>
         <button onClick={() => setEditing(emptyForm(sales))}
           className="bg-[#96d629] hover:bg-[#78b01e] text-black font-bold px-4 py-2 rounded-lg text-sm">
@@ -188,8 +214,18 @@ export default function Ventas() {
         </div>
       </div>
 
+      <div className="flex flex-wrap items-center gap-2 bg-white border border-zinc-200 rounded-xl p-3">
+        <button onClick={() => moveDay(-1)} className="px-3 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200" title="Día anterior">←</button>
+        <input type="date" className={inp + ' max-w-[175px]'} value={selectedDate === 'all' ? '' : selectedDate}
+          onChange={e => setSelectedDate(e.target.value || TODAY())} />
+        <button onClick={() => moveDay(1)} className="px-3 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200" title="Día siguiente">→</button>
+        <button onClick={() => setSelectedDate(TODAY())} className="px-3 py-2 rounded-lg bg-[#96d629]/20 text-[#4a7c00] font-semibold text-sm">Hoy</button>
+        <button onClick={() => setSelectedDate('all')} className="px-3 py-2 rounded-lg bg-zinc-100 text-zinc-600 text-sm">Todo el historial</button>
+        <button onClick={exportDay} className="ml-auto px-3 py-2 rounded-lg bg-zinc-800 text-white font-semibold text-sm">Exportar CSV</button>
+      </div>
+
       <input className="w-full max-w-sm bg-white border border-zinc-200 rounded-lg px-3 py-2 text-zinc-800 text-sm focus:border-[#96d629] focus:outline-none placeholder-zinc-400"
-        placeholder="Buscar producto, color, cliente..." value={search} onChange={e => setSearch(e.target.value)} />
+        placeholder="Buscar dentro de este día..." value={search} onChange={e => setSearch(e.target.value)} />
 
       <div className="bg-white border border-zinc-200 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
