@@ -118,4 +118,8 @@ export function getSemaphore(fechaEntrega, estado) {
   return { emoji: '🟢', label: 'A TIEMPO' };
 }
 
-export const TODAY = () => new Date().toISOString().split('T')[0];
+// Fecha comercial de Printoria. No depende de UTC ni del reloj/idioma del navegador.
+export const TODAY = () => new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'America/Monterrey',
+  year: 'numeric', month: '2-digit', day: '2-digit',
+}).format(new Date());
